@@ -384,6 +384,9 @@ label{font-size:0.82rem;color:var(--muted);margin-bottom:0.4rem;display:block;le
 
     <!-- STEP 2: DADOS -->
     <div class="onboard-step" id="ob-step-2">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+        <button onclick="voltarStep()" style="background:var(--border,#e2e8f0);border:none;border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;font-weight:700;cursor:pointer;color:#444;font-family:inherit;display:flex;align-items:center;gap:0.3rem;transition:all 0.2s" onmouseover="this.style.background='#d0d7e6'" onmouseout="this.style.background='#e2e8f0'">← Voltar</button>
+      </div>
       <div class="prog-dots">
         <div class="prog-d done"></div><div class="prog-d done"></div><div class="prog-d"></div>
       </div>
@@ -420,6 +423,9 @@ label{font-size:0.82rem;color:var(--muted);margin-bottom:0.4rem;display:block;le
 
     <!-- STEP 3: OBJETIVO -->
     <div class="onboard-step" id="ob-step-3">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+        <button onclick="voltarStep()" style="background:#e2e8f0;border:none;border-radius:8px;padding:0.4rem 0.9rem;font-size:0.82rem;font-weight:700;cursor:pointer;color:#444;font-family:inherit;display:flex;align-items:center;gap:0.3rem;transition:all 0.2s" onmouseover="this.style.background='#d0d7e6'" onmouseout="this.style.background='#e2e8f0'">← Voltar</button>
+      </div>
       <div class="prog-dots">
         <div class="prog-d done"></div><div class="prog-d done"></div><div class="prog-d done"></div>
       </div>
@@ -1068,6 +1074,14 @@ function selectObjetivo(o){
   obObjetivo = o;
   document.querySelectorAll('#ob-step-3 .tipo-btn').forEach(b => b.classList.remove('selected'));
   event.currentTarget.classList.add('selected');
+}
+
+function voltarStep(){
+  if(obStep > 1){
+    obStep--;
+    document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('ob-step-' + obStep).classList.add('active');
+  }
 }
 
 function nextStep(){
