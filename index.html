@@ -38,10 +38,48 @@ nav.sidebar{position:fixed;top:56px;left:0;bottom:0;width:64px;background:var(--
 .nav-btn:hover .nav-tooltip{opacity:1}
 
 /* MOBILE NAV */
-nav.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);z-index:50;justify-content:space-around;padding:6px 4px}
-.bnav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;cursor:pointer;padding:4px 8px;border-radius:10px;font-size:.6rem;color:var(--muted-fg);transition:.2s}
-.bnav-btn span.icon{font-size:1.2rem}
-.bnav-btn.active{background:rgba(26,95,212,.1);color:var(--primary)}
+nav.bottom-nav{
+  display:none;
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:var(--card);
+  border-top:1px solid var(--border);
+  z-index:50;
+  padding:6px 4px;
+  grid-template-columns:repeat(5,1fr);
+  gap:4px;
+}
+
+.bnav-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  border:none;
+  background:none;
+  cursor:pointer;
+  padding:4px 2px;
+  border-radius:10px;
+  font-size:.52rem;
+  color:var(--muted-fg);
+  transition:.2s;
+  min-width:0;
+  line-height:1.05;
+  height:42px;
+}
+
+.bnav-btn span.icon{
+  font-size:1.15rem;
+  line-height:1;
+}
+
+.bnav-btn.active{
+  background:rgba(26,95,212,.1);
+  color:var(--primary);
+}
 
 main{margin-top:56px;margin-left:64px;min-height:100vh;padding:24px}
 .page-inner{max-width:1100px;margin:0 auto}
@@ -234,10 +272,16 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
 /* RESPONSIVE */
 @media(max-width:768px){
   nav.sidebar{display:none}
-  nav.bottom-nav{display:flex}
-  main{margin-left:0;padding:12px;margin-bottom:60px}
+  nav.bottom-nav{display:grid}
+
+  main{
+    margin-left:0;
+    padding:12px;
+    margin-bottom:104px;
+  }
+
   .grid4{grid-template-columns:1fr 1fr}
-  .grid3{grid-template-columns:repeat(3,1fr)}
+  .grid3{grid-template-columns:1fr 1fr}
   .grid2{grid-template-columns:1fr}
 }
 @media(max-width:480px){
@@ -592,7 +636,7 @@ function buildNav() {
     btn.onclick = () => navigate(n.id);
     sb.appendChild(btn);
   });
-  const mobileItems = NAV.slice(0, 6).concat([NAV.find(x => x.id === 'perfil')]);
+  const mobileItems = NAV;
   mobileItems.forEach(n => {
     const btn = document.createElement('button');
     btn.className = 'bnav-btn' + (currentPage === n.id ? ' active' : '');
