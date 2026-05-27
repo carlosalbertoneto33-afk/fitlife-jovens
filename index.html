@@ -462,7 +462,7 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
     <button class="btn btn-primary w-full mt-4" onclick="closeModal('modal-howto')">Entendido! 💪</button>
   </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // ===================== STATE =====================
 const KEY = 'pulsefit_v2';
@@ -1733,7 +1733,7 @@ function renderResponsavel(el) {
         <p>• Conquistas: ${S.badges.length} de ${ALL_BADGES.length}</p>
         <p style="font-size:.72rem;font-style:italic;margin-top:8px">Gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
       </div>
-      <button class="btn w-full mt-4" style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c" onclick="baixarRelatorio()">📄 Baixar Relatório em TXT</button>
+      <button class="btn w-full mt-4" style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c" onclick="baixarRelatorio()">📄 Baixar Relatório em PDF</button>
     </div>`;
 }
 
@@ -1744,57 +1744,73 @@ function baixarRelatorio() {
   const kcal = S.refeicoes.filter(m => m.feita).reduce((a,m) => a+m.kcal, 0);
   const burned = S.exercicios.reduce((a,e) => a+e.kcal, 0);
 
-  const texto = `PULSEFIT — COMBATENDO A OBESIDADE NOS JOVENS
-Relatório de Acompanhamento
-==============================
-Aluno: ${p.nome||'—'}
-Idade: ${age} anos
-Escola: ${p.escola||'—'}
-Objetivo: ${p.objetivo||'—'}
-Data: ${new Date().toLocaleDateString('pt-BR')}
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-SAÚDE
------
-Peso atual: ${pesoAtual} kg
-Peso meta: ${p.pesoMeta||'—'} kg
-Altura: ${p.altura||'—'} cm
+  const linhas = [
+    'PULSEFIT - COMBATENDO A OBESIDADE NOS JOVENS',
+    'Relatório de Acompanhamento',
+    '',
+    `Aluno: ${p.nome || '-'}`,
+    `Idade: ${age} anos`,
+    `Escola: ${p.escola || '-'}`,
+    `Objetivo: ${p.objetivo || '-'}`,
+    `Data: ${new Date().toLocaleDateString('pt-BR')}`,
+    '',
+    'SAÚDE',
+    `Peso atual: ${pesoAtual} kg`,
+    `Peso meta: ${p.pesoMeta || '-'} kg`,
+    `Altura: ${p.altura || '-'} cm`,
+    '',
+    'HOJE',
+    `Calorias consumidas: ${kcal} kcal`,
+    `Calorias queimadas: ${burned} kcal`,
+    `Água ingerida: ${S.agua} copos (${S.agua * 250}ml)`,
+    '',
+    'ATIVIDADE',
+    `Exercícios hoje: ${S.exercicios.length}`,
+    `Refeições registradas: ${S.refeicoes.length}`,
+    `XP acumulado: ${S.xp || 0}`,
+    `Sequência: ${S.streak || 0} dias`,
+    `Conquistas: ${S.badges.length} de ${ALL_BADGES.length}`,
+    '',
+    'HISTÓRICO DE PESO',
+    ...(S.pesos.length
+      ? S.pesos.slice(0,10).map(pw => `${pw.data}: ${pw.peso} kg`)
+      : ['Nenhum registro.'])
+  ];
 
-HOJE
-----
-Calorias consumidas: ${kcal} kcal
-Calorias queimadas: ${burned} kcal
-Água ingerida: ${S.agua} copos (${S.agua*250}ml)
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('PulseFit', 14, 18);
 
-ATIVIDADE
----------
-Exercícios hoje: ${S.exercicios.length}
-Refeições registradas: ${S.refeicoes.length}
-XP acumulado: ${S.xp||0}
-Sequência: ${S.streak||0} dias
-Conquistas: ${S.badges.length} de ${ALL_BADGES.length}
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
 
-HISTÓRICO DE PESO
------------------
-${S.pesos.slice(0,10).map(pw => pw.data+': '+pw.peso+'kg').join('\n')||'Nenhum registro.'}
+  let y = 30;
+  linhas.forEach(linha => {
+    const textoQuebrado = doc.splitTextToSize(linha, 180);
+    textoQuebrado.forEach(t => {
+      if (y > 280) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(t, 14, y);
+      y += 7;
+    });
+  });
 
-==============================
-PulseFit — ${new Date().getFullYear()}`;
+  const nomeArquivo = 'relatorio_' + (p.nome || 'aluno').replace(/\s/g, '_') + '_' + new Date().toISOString().split('T')[0] + '.pdf';
+  doc.save(nomeArquivo);
 
-  const blob = new Blob([texto], { type:'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'relatorio_' + (p.nome||'aluno').replace(/\s/g,'_') + '_' + new Date().toISOString().split('T')[0] + '.txt';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('📄 Relatório baixado!');
+  showToast('📄 Relatório em PDF baixado!');
 }
 
 // ===================== PERFIL =====================
 function renderPerfil(el) {
   const p = S.perfil || {};
   const OBJETIVOS = [
-    { id:'emagrecer', label:'🔥 Emagrecer' },
+    { id:'emagrecer', label:'🔥 Crescimento Saudável' },
     { id:'saude', label:'💚 Saúde geral' },
     { id:'esporte', label:'⚖️ Equilíbrio' },
     { id:'movimento', label:'🏃 Movimento' },
@@ -1868,7 +1884,7 @@ let selectedObj = (S.perfil && S.perfil.objetivo) || 'saude';
 
 function selectObj(id) {
   selectedObj = id;
-  const OBJETIVOS = ['emagrecer','saude','esporte','movimento','massa'];
+  const OBJETIVOS = ['crescimento saudável','saude','esporte','movimento','massa'];
   OBJETIVOS.forEach(o => {
     const btn = document.getElementById('obj-' + o);
     if (btn) {
@@ -1949,7 +1965,7 @@ const TIPOS = [
 ];
 
 const OB_OBJETIVOS = [
-  { id:'emagrecer', icon:'🔥', label:'Emagrecer', desc:'Perder peso de forma saudável' },
+  { id:'Crescimento Saudável', icon:'🔥', label:'Crescimento Saudável', desc:'Perder peso de forma saudável' },
   { id:'saude', icon:'💚', label:'Saúde', desc:'Me sentir bem e prevenir doenças' },
   { id:'esporte', icon:'⚖️', label:'Equilíbrio', desc:'Manter hábitos saudáveis' },
   { id:'movimento', icon:'🏃', label:'Movimento', desc:'Praticar mais atividades físicas' },
