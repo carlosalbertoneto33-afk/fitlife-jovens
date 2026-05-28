@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>PulseFit — Combatendo a Obesidade nos Jovens</title>
-<link href__="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:#f0f4ff;color:#1a2340;min-height:100vh}
@@ -304,15 +304,56 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
 .border-top-green{border-top:4px solid #4ade80}
 .border-top-blue{border-top:4px solid #60a5fa}
 .border-top-orange{border-top:4px solid #fb923c}
+.readonly-note{
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  color:#1d4ed8;
+  border-radius:12px;
+  padding:12px;
+  font-size:.85rem;
+  margin-bottom:16px;
+}
+
+.aluno-list-btn{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--secondary);
+  border-radius:12px;
+  padding:10px 12px;
+  cursor:pointer;
+  text-align:left;
+  font-family:'DM Sans',sans-serif;
+}
+
+.aluno-list-btn.active{
+  border-color:var(--primary);
+  background:rgba(26,95,212,.08);
+}
 </style>
 </head>
 <body>
 
 <!-- TOAST -->
 <div id="toast"></div>
+<!-- LOGIN / CADASTRO -->
+<div class="onboarding-overlay" id="login-screen" style="display:none">
+  <div class="onboarding-card">
+    <div class="onboarding-header">
+      <div class="flex items-center gap-3 mb-3">
+        <div style="width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">P</div>
+        <div>
+          <h1>PulseFit</h1>
+          <p>Acesso personalizado</p>
+        </div>
+      </div>
+      <p style="font-size:.85rem;color:rgba(255,255,255,.8)">Entre ou crie sua conta</p>
+    </div>
+    <div class="onboarding-body" id="login-body"></div>
+  </div>
+</div>
 
 <!-- ONBOARDING -->
-<div class="onboarding-overlay" id="onboarding">
+<div class="onboarding-overlay" id="onboarding" style="display:none">
   <div class="onboarding-card">
     <div class="onboarding-header">
       <div class="flex items-center gap-3 mb-3">
@@ -467,6 +508,287 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
 // ===================== STATE =====================
 const KEY = 'pulsefit_v2';
 let S = {};
+const AUTH_KEY = 'pulsefit_auth_v1';
+let AUTH = { contas:[], logado:null, filhoAtual:null };
+let authMode = 'login';
+let authTipo = 'aluno';
+
+function loadAuth(){
+  try{
+    AUTH = JSON.parse(localStorage.getItem(AUTH_KEY)) || { contas:[], logado:null, filhoAtual:null };
+  }catch(e){
+    AUTH = { contas:[], logado:null, filhoAtual:null };
+  }
+}
+
+function saveAuth(){
+  localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH));
+}
+
+function contaAtual(){
+  return AUTH.contas.find(c => c.id === AUTH.logado) || null;
+}
+
+function renderLogin(){
+  const box = document.getElementById('login-body');
+  if(!box) return;
+
+  if(authMode === 'login'){
+    box.innerHTML = `
+      <h2 style="font-family:Syne,sans-serif;font-size:1.2rem;margin-bottom:4px">Entrar</h2>
+      <p class="text-sm text-muted mb-4">Use CPF, email ou usuário.</p>
+      <div class="space-y-3">
+        <div><label class="field-label">CPF, email ou usuário</label><input class="input" id="login-id"></div>
+        <div><label class="field-label">Senha</label><input class="input" type="password" id="login-senha"></div>
+        <button class="btn btn-primary w-full" onclick="entrar()">Entrar</button>
+        <button class="btn btn-outline w-full" onclick="authMode='cadastro';renderLogin()">Criar conta</button>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = `
+    <h2 style="font-family:Syne,sans-serif;font-size:1.2rem;margin-bottom:4px">Cadastro</h2>
+    <p class="text-sm text-muted mb-4">Escolha o tipo de acesso.</p>
+    <div class="tipo-grid">
+      ${[
+        { id:'aluno', icon:'🧒', label:'Aluno', desc:'Minha rotina' },
+        { id:'responsavel', icon:'👨‍👩‍👧', label:'Responsável', desc:'Acompanhar filhos' },
+        { id:'colaborador', icon:'🏫', label:'Colaborador', desc:'Função escolar' },
+        { id:'escola', icon:'🏢', label:'Escola', desc:'Gestão escolar' },
+      ].map(t => `
+        <div class="tipo-btn ${authTipo===t.id?'selected':''}" onclick="authTipo='${t.id}';renderLogin()">
+          <span class="ti">${t.icon}</span>
+          <strong>${t.label}</strong>
+          <small>${t.desc}</small>
+        </div>
+      `).join('')}
+    </div>
+    ${camposCadastro()}
+    <button class="btn btn-primary w-full mt-4" onclick="cadastrarConta()">Cadastrar</button>
+    <button class="btn btn-outline w-full mt-2" onclick="authMode='login';renderLogin()">Já tenho conta</button>
+  `;
+}
+
+function camposCadastro(){
+  let html = `
+    <div class="space-y-3">
+      <div><label class="field-label">Nome</label><input class="input" id="cad-nome"></div>
+      <div><label class="field-label">CPF, email ou usuário</label><input class="input" id="cad-login"></div>
+      <div><label class="field-label">Senha</label><input class="input" type="password" id="cad-senha"></div>
+  `;
+
+ if(authTipo === 'aluno'){
+  html += `
+    <div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="cad-birthdate"></div>
+
+    <div class="grid2">
+      <div><label class="field-label">Altura (cm)</label><input class="input" type="number" id="cad-altura" placeholder="Ex: 160"></div>
+      <div><label class="field-label">Peso (kg)</label><input class="input" type="number" id="cad-peso" placeholder="Ex: 55"></div>
+    </div>
+
+    <div><label class="field-label">Email do responsável</label><input class="input" id="cad-email-pai"></div>
+    <div><label class="field-label">Escola</label><input class="input" id="cad-escola"></div>
+
+    <div>
+      <label class="field-label">Série</label>
+      <select class="select" id="cad-serie">
+        <option value="">Selecione a série</option>
+        <option>1º ano do Ensino Fundamental</option>
+        <option>2º ano do Ensino Fundamental</option>
+        <option>3º ano do Ensino Fundamental</option>
+        <option>4º ano do Ensino Fundamental</option>
+        <option>5º ano do Ensino Fundamental</option>
+        <option>6º ano do Ensino Fundamental</option>
+        <option>7º ano do Ensino Fundamental</option>
+        <option>8º ano do Ensino Fundamental</option>
+        <option>9º ano do Ensino Fundamental</option>
+        <option>1º ano do Ensino Médio</option>
+        <option>2º ano do Ensino Médio</option>
+        <option>3º ano do Ensino Médio</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="field-label">Objetivo do aluno</label>
+      <select class="select" id="cad-objetivo">
+        <option value="saude">💚 Saúde geral</option>
+        <option value="crescimento">🌱 Crescimento saudável</option>
+        <option value="equilibrio">⚖️ Equilíbrio</option>
+        <option value="movimento">🏃 Movimento</option>
+        <option value="massa">💪 Ganhar massa</option>
+      </select>
+    </div>
+  `;
+}
+  if(authTipo === 'responsavel'){
+    html += `
+      <div><label class="field-label">Email</label><input class="input" id="cad-email"></div>
+      <div><label class="field-label">Nome dos filhos</label><input class="input" id="cad-filhos" placeholder="Ex: Ana, Pedro, Lucas"></div>
+    `;
+  }
+
+  if(authTipo === 'colaborador'){
+    html += `
+      <div><label class="field-label">Função na escola</label><input class="input" id="cad-funcao" placeholder="Ex: Professor, coordenador, orientador"></div>
+      <div><label class="field-label">Escola</label><input class="input" id="cad-escola"></div>
+    `;
+  }
+
+  if(authTipo === 'escola'){
+    html += `
+      <div><label class="field-label">Nome da escola</label><input class="input" id="cad-escola"></div>
+      <div><label class="field-label">CNPJ</label><input class="input" id="cad-cnpj"></div>
+      <div><label class="field-label">Email institucional</label><input class="input" id="cad-email"></div>
+      <div><label class="field-label">Endereço</label><input class="input" id="cad-endereco"></div>
+    `;
+  }
+
+  return html + `</div>`;
+}
+
+function cadastrarConta(){
+  const nome = document.getElementById('cad-nome').value.trim();
+  const login = document.getElementById('cad-login').value.trim();
+  const senha = document.getElementById('cad-senha').value.trim();
+
+  if(!nome || !login || !senha){
+    showToast('Preencha nome, login e senha.');
+    return;
+  }
+
+  if(AUTH.contas.some(c => c.login === login)){
+    showToast('Esse login já existe.');
+    return;
+  }
+
+  const conta = {
+    id: Date.now().toString(),
+    tipo: authTipo,
+    nome,
+    login,
+    senha,
+    autorizado: authTipo !== 'aluno',
+    filhos: [],
+    dados: {}
+  };
+
+  if(authTipo === 'aluno'){
+  conta.dados.birthdate = document.getElementById('cad-birthdate').value;
+  conta.dados.altura = +(document.getElementById('cad-altura').value) || 160;
+  conta.dados.peso = +(document.getElementById('cad-peso').value) || 55;
+  conta.dados.emailPai = document.getElementById('cad-email-pai').value.trim();
+  conta.dados.escola = document.getElementById('cad-escola').value.trim();
+  conta.dados.serie = document.getElementById('cad-serie').value;
+  conta.dados.objetivo = document.getElementById('cad-objetivo').value;
+  conta.autorizado = false;
+  showToast('Solicitação enviada ao email do responsável.');
+}
+  if(authTipo === 'responsavel'){
+    conta.dados.email = document.getElementById('cad-email').value.trim();
+    conta.filhos = document.getElementById('cad-filhos').value
+      .split(',')
+      .map(f => ({ id: Date.now() + '_' + f.trim(), nome:f.trim() }))
+      .filter(f => f.nome);
+    AUTH.filhoAtual = conta.filhos[0]?.id || null;
+  }
+
+  if(authTipo === 'colaborador'){
+    conta.dados.funcao = document.getElementById('cad-funcao').value.trim();
+    conta.dados.escola = document.getElementById('cad-escola').value.trim();
+  }
+
+  if(authTipo === 'escola'){
+    conta.dados.escola = document.getElementById('cad-escola').value.trim();
+    conta.dados.cnpj = document.getElementById('cad-cnpj').value.trim();
+    conta.dados.email = document.getElementById('cad-email').value.trim();
+    conta.dados.endereco = document.getElementById('cad-endereco').value.trim();
+  }
+
+  AUTH.contas.push(conta);
+  AUTH.logado = conta.id;
+  saveAuth();
+  aplicarConta();
+}
+
+function entrar(){
+  const login = document.getElementById('login-id').value.trim();
+  const senha = document.getElementById('login-senha').value.trim();
+  const conta = AUTH.contas.find(c => c.login === login && c.senha === senha);
+
+  if(!conta){
+    showToast('Login ou senha inválidos.');
+    return;
+  }
+
+  AUTH.logado = conta.id;
+  saveAuth();
+  aplicarConta();
+}
+
+function sair(){
+  AUTH.logado = null;
+  saveAuth();
+  location.reload();
+}
+
+function aplicarConta(){
+  const c = contaAtual();
+  if(!c) return;
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+
+  const peso = c.dados.peso || S.perfil?.peso || 55;
+  const altura = c.dados.altura || S.perfil?.altura || 160;
+  const birthdate = c.dados.birthdate || S.perfil?.birthdate || '';
+  const objetivo = c.dados.objetivo || S.perfil?.objetivo || 'saude';
+  const sexo = S.perfil?.sexo || 'M';
+  const atividade = S.perfil?.atividade || 1.375;
+
+  const metas = c.tipo === 'aluno'
+    ? calcMacros(peso, altura, birthdate, sexo, objetivo, atividade)
+    : {
+        tdee: S.perfil?.meta || 2000,
+        prot: S.perfil?.metaProt || 120,
+        carb: S.perfil?.metaCarb || 250,
+        gord: S.perfil?.metaGord || 60
+      };
+
+  S.onboarded = true;
+  S.perfil = {
+    ...(S.perfil || {}),
+    nome: c.nome,
+    tipo: c.tipo,
+    birthdate,
+    altura,
+    peso,
+    sexo,
+    escola: c.dados.escola || S.perfil?.escola || '',
+    serie: c.dados.serie || S.perfil?.serie || '',
+    objetivo,
+    atividade,
+    meta: metas.tdee,
+    metaProt: metas.prot,
+    metaCarb: metas.carb,
+    metaGord: metas.gord,
+    waterGoal: c.tipo === 'aluno' ? calcWaterGoal(peso, birthdate) : (S.perfil?.waterGoal || 8),
+    autorizado: c.autorizado
+  };
+
+  saveState();
+updateHeader();
+
+if(c.tipo === 'escola' || c.tipo === 'responsavel'){
+  currentPage = 'responsavel';
+} else {
+  currentPage = 'dashboard';
+}
+
+buildNav();
+renderPage();
+}
 
 function loadState() {
   try {
@@ -655,11 +977,21 @@ function navigate(id) {
 // ===================== HEADER =====================
 function updateHeader() {
   const p = S.perfil || {};
+  const c = contaAtual();
   const { level } = getLevel(S.xp || 0);
+
+  const tipoNome = {
+    aluno:'aluno',
+    responsavel:'responsável',
+    colaborador:'colaborador',
+    escola:'escola'
+  };
+
   document.getElementById('header-xp').textContent = level.name + ' · ' + (S.xp || 0) + ' XP';
   document.getElementById('header-name').textContent = p.nome || '—';
-  document.getElementById('header-tipo').textContent = p.tipo || 'aluno';
+  document.getElementById('header-tipo').textContent = tipoNome[c?.tipo || p.tipo] || 'aluno';
   document.getElementById('header-avatar').textContent = (p.nome || 'A')[0].toUpperCase();
+
   const nw = document.getElementById('header-name-wrap');
   if (nw) nw.style.display = p.nome ? 'block' : 'none';
 }
@@ -1045,47 +1377,82 @@ function addEscolaAlim() {
 // ===================== EXERCICIOS =====================
 const EX_SUGS = {
   kids:[
-    { n:'Pega-pega', d:'20 min', k:150, how:'Corra para fugir ou pegar os amigos! Ótimo para cardio e diversão. 🏃' },
-    { n:'Amarelinha', d:'15 min', k:80, how:'Desenhe no chão, jogue a pedrinha e pule! Melhora equilíbrio e coordenação. 🎯' },
-    { n:'Pular corda', d:'15 min', k:120, how:'Comece devagar e vá aumentando o ritmo. Pode ser sozinho ou com amigos! 🪢' },
-    { n:'Dança livre', d:'30 min', k:160, how:'Dance ao som da sua música favorita! Não há jeito errado. 💃' },
-    { n:'Futebol recreativo', d:'40 min', k:200, how:'Jogue com amigos, trabalhe em equipe e divirta-se! ⚽' },
+    { n:'Pega-pega', d:'20 min', k:150, how:'Corra para fugir ou pegar os amigos. Ótimo para cardio, agilidade e diversão.' },
+    { n:'Amarelinha', d:'15 min', k:80, how:'Pule casa por casa com equilíbrio. Ajuda na coordenação motora.' },
+    { n:'Pular corda', d:'15 min', k:120, how:'Comece devagar e aumente o ritmo aos poucos. Mantenha os joelhos levemente flexionados.' },
+    { n:'Dança livre', d:'30 min', k:160, how:'Escolha uma música animada e dance livremente. O importante é se movimentar.' },
+    { n:'Futebol recreativo', d:'40 min', k:200, how:'Jogue com amigos, corra, passe a bola e se divirta com segurança.' },
+    { n:'Queimada', d:'30 min', k:180, how:'Arremesse com cuidado e desvie da bola. Trabalha reflexo, corrida e coordenação.' },
+    { n:'Circuito de cones', d:'20 min', k:130, how:'Corra em zigue-zague entre objetos. Ajuda na agilidade e equilíbrio.' },
+    { n:'Dança das cadeiras', d:'20 min', k:100, how:'Caminhe e dance ao redor das cadeiras até a música parar. Divertido e ativo.' },
+    { n:'Corrida leve no pátio', d:'15 min', k:110, how:'Corra em ritmo confortável, sem competir. Respire com calma.' },
+    { n:'Brincadeira de estátua', d:'15 min', k:70, how:'Dance enquanto a música toca e congele quando parar. Trabalha controle corporal.' },
   ],
+
   perda:[
-    { n:'Corrida', d:'30 min • moderado', k:300, how:'Comece caminhando e vá aumentando o ritmo. Mantenha postura ereta e respire no ritmo. 🏃' },
-    { n:'Jumping Jacks', d:'15 min • intenso', k:180, how:'Pés juntos e braços ao lado → pule abrindo pernas e levantando os braços → volte. Repita!' },
-    { n:'Agachamento', d:'3×15 reps', k:120, how:'Pés na largura dos ombros → dobre joelhos → desça até 90° → volte. Costas retas!' },
-    { n:'Burpees', d:'4×10 reps', k:200, how:'Em pé → agacha → mãos no chão → estende as pernas → flexão → volta → salta! 💪' },
+    { n:'Caminhada rápida', d:'30 min • leve/moderado', k:180, how:'Caminhe em ritmo firme, mantendo postura ereta e respiração confortável.' },
+    { n:'Corrida', d:'30 min • moderado', k:300, how:'Comece alternando caminhada e corrida. Evite forçar se sentir dor.' },
+    { n:'Jumping Jacks', d:'15 min • intenso', k:180, how:'Abra pernas e braços ao saltar, depois volte à posição inicial. Faça em séries curtas.' },
+    { n:'Agachamento', d:'3×15 reps', k:120, how:'Pés na largura dos ombros, desça com controle e mantenha as costas retas.' },
+    { n:'Burpees adaptado', d:'3×8 reps', k:180, how:'Agache, apoie as mãos, leve os pés para trás e volte. Pode fazer sem salto.' },
+    { n:'Subir escadas', d:'15 min', k:160, how:'Suba em ritmo seguro, usando corrimão se necessário. Desça com cuidado.' },
+    { n:'Polichinelo baixo impacto', d:'15 min', k:120, how:'Abra braços e pernas alternando os pés sem saltar. Boa opção para iniciantes.' },
+    { n:'Circuito funcional leve', d:'25 min', k:220, how:'Alterne agachamento, caminhada, prancha curta e polichinelo leve.' },
+    { n:'Dança aeróbica', d:'30 min', k:220, how:'Dance músicas animadas mantendo movimento contínuo.' },
+    { n:'Bicicleta leve', d:'35 min', k:250, how:'Pedale em ritmo confortável, com atenção à postura e hidratação.' },
   ],
+
   cardio:[
-    { n:'Ciclismo', d:'45 min', k:350, how:'Mantenha cadência constante. Use capacete e verifique os freios. Hidrate-se! 🚴' },
-    { n:'Natação', d:'30 min', k:280, how:'Aqueça na borda por 5 min. Alterne estilos para trabalhar diferentes músculos. 🏊' },
-    { n:'Pular corda', d:'20 min', k:240, how:'Segure as pontas, gire sobre a cabeça, pule quando chegar nos pés. Comece devagar!' },
+    { n:'Ciclismo', d:'45 min', k:350, how:'Mantenha cadência constante. Use capacete e verifique os freios.' },
+    { n:'Natação', d:'30 min', k:280, how:'Aqueça antes e alterne estilos conforme seu nível.' },
+    { n:'Pular corda', d:'20 min', k:240, how:'Comece com séries curtas e intervalos. Mantenha aterrissagem leve.' },
+    { n:'Corrida intervalada', d:'25 min', k:300, how:'Alterne 1 minuto correndo e 2 caminhando. Ajuste o ritmo ao seu corpo.' },
+    { n:'Elíptico', d:'30 min', k:260, how:'Mantenha ritmo constante e postura alinhada.' },
+    { n:'Remo ergométrico', d:'25 min', k:260, how:'Empurre com as pernas e puxe com os braços no final do movimento.' },
+    { n:'Aula de dança', d:'40 min', k:300, how:'Siga a música e mantenha movimento contínuo. Hidrate-se.' },
+    { n:'Patinação', d:'30 min', k:250, how:'Use equipamentos de proteção e pratique em local seguro.' },
+    { n:'Caminhada em subida', d:'30 min', k:260, how:'Caminhe em subida leve, sem inclinar demais o tronco.' },
+    { n:'Futebol', d:'45 min', k:380, how:'Aqueça antes, jogue em ritmo seguro e respeite seus limites.' },
   ],
+
   massa:[
-    { n:'Supino', d:'4×8 reps', k:80, how:'Deite no banco → segure a barra na largura dos ombros → desça até o peito → empurre. Respire!' },
-    { n:'Remada', d:'4×10 reps', k:90, how:'Curve o tronco → segure a barra → puxe até a barriga → desça controlado. Core ativado!' },
-    { n:'Agachamento livre', d:'4×8 reps', k:120, how:'Barra nos ombros → pés largos → desça com controle → suba explosivo. Joelhos para os pés!' },
+    { n:'Agachamento livre', d:'4×8 reps', k:120, how:'Desça com controle, joelhos acompanhando a linha dos pés e costas firmes.' },
+    { n:'Flexão de braço', d:'3×10 reps', k:90, how:'Mantenha o corpo alinhado. Pode apoiar os joelhos se precisar.' },
+    { n:'Remada', d:'4×10 reps', k:90, how:'Puxe o peso em direção ao tronco, mantendo ombros longe das orelhas.' },
+    { n:'Supino', d:'4×8 reps', k:80, how:'Desça o peso com controle e empurre sem travar os cotovelos.' },
+    { n:'Avanço', d:'3×12 reps', k:110, how:'Dê um passo à frente e desça com equilíbrio. Alterne as pernas.' },
+    { n:'Elevação pélvica', d:'3×15 reps', k:80, how:'Deite, apoie os pés e eleve o quadril contraindo glúteos.' },
+    { n:'Desenvolvimento de ombros', d:'3×10 reps', k:75, how:'Empurre os pesos acima da cabeça com controle.' },
+    { n:'Prancha', d:'3×30s', k:60, how:'Mantenha abdômen firme e coluna alinhada.' },
+    { n:'Rosca bíceps', d:'3×12 reps', k:60, how:'Suba o peso sem balançar o corpo. Controle a descida.' },
+    { n:'Tríceps no banco', d:'3×10 reps', k:70, how:'Apoie as mãos no banco e flexione os cotovelos com cuidado.' },
   ],
+
   flexib:[
-    { n:'Yoga', d:'45 min', k:150, how:'Siga as poses com respiração lenta e profunda. Não force além do confortável. 🧘' },
-    { n:'Alongamento completo', d:'20 min', k:60, how:'Alongue cada grupo muscular por 30 segundos. Sem dor — apenas tensão suave. 🌸' },
-    { n:'Mobilidade articular', d:'15 min', k:50, how:'Círculos lentos nos ombros, quadril, tornozelos. Ótimo para prevenir lesões!' },
+    { n:'Yoga', d:'45 min', k:150, how:'Faça as posturas com respiração lenta. Não force além do confortável.' },
+    { n:'Alongamento completo', d:'20 min', k:60, how:'Alongue cada grupo muscular por cerca de 30 segundos, sem dor.' },
+    { n:'Mobilidade articular', d:'15 min', k:50, how:'Faça movimentos circulares lentos nos ombros, quadril e tornozelos.' },
+    { n:'Alongamento de pernas', d:'15 min', k:45, how:'Alongue posterior, panturrilha e quadríceps com calma.' },
+    { n:'Alongamento de costas', d:'12 min', k:40, how:'Faça movimentos suaves de coluna, sem forçar.' },
+    { n:'Mobilidade de quadril', d:'15 min', k:55, how:'Faça rotações e aberturas de quadril em ritmo lento.' },
+    { n:'Respiração guiada', d:'10 min', k:25, how:'Sente-se confortável e respire profundamente, soltando o ar devagar.' },
+    { n:'Pilates básico', d:'30 min', k:120, how:'Movimentos lentos, controle do abdômen e postura alinhada.' },
+    { n:'Alongamento pós-treino', d:'10 min', k:35, how:'Relaxe a musculatura trabalhada após atividade física.' },
+    { n:'Equilíbrio em um pé', d:'10 min', k:30, how:'Fique em um pé por alguns segundos e alterne. Use apoio se necessário.' },
   ],
 };
-
 let exCat = 'kids';
 
 function renderExercicios(el) {
   const totalKcal = S.exercicios.reduce((a,e) => a+e.kcal, 0);
   const totalMin = S.exercicios.reduce((a,e) => a+e.min, 0);
-  const catIcons = { cardio:'🏃', forca:'💪', flexib:'🧘', esporte:'⚽' };
+  const catIcons = { 'deslocamento ativo':'🏃', 'exercícios físicos' :'💪', flexibilidade:'🧘', '🧒 Atividades Recreativas' : '🧒', '🔥 Atividades Energéticas' : '🔥' };
   const catFilters = [
-    { id:'kids', label:'🧒 Infantil' },
-    { id:'perda', label:'🔥 Energia' },
-    { id:'cardio', label:'🏃 Cardio' },
-    { id:'massa', label:'💪 Força' },
-    { id:'flexib', label:'🧘 Flex' },
+    { id:'kids', label:'🧒 Atividades Recreativas' },
+    { id:'perda', label:'🔥 Atividades Energéticas' },
+    { id:'cardio', label:'🏃 Deslocamento ativo' },
+    { id:'massa', label:'💪 Exercícios Físicos' },
+    { id:'flexib', label:'🧘 Flexibilidade' },
   ];
 
   el.innerHTML = `
@@ -1121,7 +1488,7 @@ function renderExercicios(el) {
         }
       </div>
       <div class="card">
-        <div class="flex items-center gap-2 mb-3"><div class="card-title" style="margin:0">Sugestões com como fazer</div>${aiBadge('Rotina adaptada')}</div>
+        <div class="flex items-center gap-2 mb-3"><div class="card-title" style="margin:0">Prática de Atividades Físicas</div>${aiBadge('Rotina adaptada')}</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
           ${catFilters.map(c => `<button class="btn btn-sm ${exCat===c.id?'btn-primary':'btn-outline'}" onclick="setExCat('${c.id}')">${c.label}</button>`).join('')}
         </div>
@@ -1674,69 +2041,269 @@ function renderConquistas(el) {
 }
 
 // ===================== RESPONSAVEL =====================
-function renderResponsavel(el) {
-  const p = S.perfil || {};
-  const age = p.birthdate ? calcAge(p.birthdate) : (p.idade || 12);
-  const pesoAtual = S.pesos.length ? S.pesos[0].peso : null;
-  const kcal = S.refeicoes.filter(m => m.feita).reduce((a,m) => a+m.kcal, 0);
-  const burned = S.exercicios.reduce((a,e) => a+e.kcal, 0);
-
-  const summaryItems = [
-    { icon:'👤', label:'Aluno', val:p.nome||'—' },
-    { icon:'🎂', label:'Idade', val:age+' anos' },
-    { icon:'🏫', label:'Escola', val:p.escola||'—' },
-    { icon:'🎯', label:'Objetivo', val:p.objetivo||'—' },
-    { icon:'⚖️', label:'Peso atual', val:pesoAtual?pesoAtual+' kg':'Não registrado' },
-    { icon:'🔥', label:'Calorias hoje', val:kcal+' kcal' },
-    { icon:'🏃', label:'Kcal queimadas', val:burned+' kcal' },
-    { icon:'💧', label:'Água hoje', val:S.agua+' copos' },
-    { icon:'⭐', label:'XP acumulado', val:(S.xp||0)+' XP' },
-    { icon:'🔥', label:'Sequência', val:(S.streak||0)+' dias' },
-  ];
-
-  el.innerHTML = `
-    <div class="page-title">
-      <h1>👨‍👩‍👧 <span class="text-primary">Acompanhamento</span></h1>
-      <button class="btn btn-outline" onclick="baixarRelatorio()" style="color:#c2410c;border-color:#fed7aa;background:#fff7ed">📄 Baixar Relatório</button>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">Resumo do aluno</div>
-        <div class="space-y-2">
-          ${summaryItems.map(item => `
-            <div class="history-item">
-              <span class="text-sm text-muted">${item.icon} ${item.label}</span>
-              <span class="font-semibold text-sm">${item.val}</span>
-            </div>`).join('')}
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Evolução de peso</div>
-        ${S.pesos.length === 0
-          ? '<p class="text-sm text-muted" style="text-align:center;padding:32px 0">Nenhum peso registrado ainda.</p>'
-          : '<div class="space-y-2">' + S.pesos.slice(0,8).map(pw => `
-              <div class="history-item">
-                <span class="text-xs text-muted">${pw.data}</span>
-                <span class="font-bold text-sm">${pw.peso} kg</span>
-              </div>`).join('') + '</div>'
-        }
-      </div>
-    </div>
-    <div class="card mt-4">
-      <div class="flex items-center gap-2 mb-4">${aiBadge('Análise automatizada')}<div class="card-title" style="margin:0">📋 Relatório completo</div></div>
-      <div class="space-y-1 text-sm text-muted">
-        <p>📋 <strong>Relatório de Acompanhamento — ${p.nome||'Aluno'}</strong></p>
-        <p>• Refeições registradas: ${S.refeicoes.length}</p>
-        <p>• Exercícios realizados: ${S.exercicios.length}</p>
-        <p>• Registros de peso: ${S.pesos.length}</p>
-        <p>• Total de XP: ${S.xp||0}</p>
-        <p>• Conquistas: ${S.badges.length} de ${ALL_BADGES.length}</p>
-        <p style="font-size:.72rem;font-style:italic;margin-top:8px">Gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
-      </div>
-      <button class="btn w-full mt-4" style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c" onclick="baixarRelatorio()">📄 Baixar Relatório em PDF</button>
-    </div>`;
+function alunosCadastrados(){
+  return AUTH.contas.filter(c => c.tipo === 'aluno');
 }
 
+function seriesDisponiveis(){
+  return [...new Set(alunosCadastrados().map(a => a.dados?.serie).filter(Boolean))];
+}
+
+function alunosPorSerie(){
+  const alunos = alunosCadastrados();
+  if(!AUTH.serieEscolaAtual) return alunos;
+  return alunos.filter(a => a.dados?.serie === AUTH.serieEscolaAtual);
+}
+
+function alunoSelecionadoEscola(){
+  const alunos = alunosPorSerie();
+  return alunos.find(a => a.id === AUTH.alunoEscolaAtual) || alunos[0] || null;
+}
+
+function selecionarSerieEscola(serie){
+  AUTH.serieEscolaAtual = serie;
+  AUTH.alunoEscolaAtual = null;
+  saveAuth();
+  renderPage();
+}
+
+function selecionarAlunoEscola(id){
+  AUTH.alunoEscolaAtual = id;
+  saveAuth();
+  renderPage();
+}
+
+function filhosDoResponsavel(conta){
+  const emailResp = (conta.dados?.email || '').toLowerCase();
+  const porEmail = alunosCadastrados().filter(a => (a.dados?.emailPai || '').toLowerCase() === emailResp);
+
+  if(porEmail.length) return porEmail;
+
+  return (conta.filhos || []).map(f => ({
+    id:f.id,
+    nome:f.nome,
+    tipo:'aluno',
+    dados:{ serie:'-', escola:'-' },
+    autorizado:true
+  }));
+}
+
+function filhoSelecionadoResponsavel(conta){
+  const filhos = filhosDoResponsavel(conta);
+  return filhos.find(f => f.id === AUTH.filhoAtual) || filhos[0] || null;
+}
+
+function selecionarFilhoResponsavel(id){
+  AUTH.filhoAtual = id;
+  saveAuth();
+  renderPage();
+}
+
+function painelAlunoReadonly(aluno, titulo){
+  if(!aluno){
+    return '<div class="card"><p class="text-sm text-muted">Nenhum aluno encontrado.</p></div>';
+  }
+
+  const dados = aluno.dados || {};
+  const idade = dados.birthdate ? calcAge(dados.birthdate) + ' anos' : '-';
+  const peso = dados.peso || '-';
+  const altura = dados.altura || '-';
+  const agua = S.agua || 0;
+  const kcal = S.refeicoes.filter(m => m.feita).reduce((a,m) => a + m.kcal, 0);
+  const exercicios = S.exercicios.length;
+  const xp = S.xp || 0;
+
+  const refeicoesHTML = S.refeicoes.length
+    ? S.refeicoes.slice(0,6).map(m => `
+      <div class="meal-item">
+        <span class="meal-item-icon">${m.icon || '🍽️'}</span>
+        <div class="meal-item-info">
+          <strong>${m.nome}</strong>
+          <small>${m.hora || '--:--'} · ${m.kcal || 0} kcal</small>
+        </div>
+        <span class="${m.feita ? 'badge-green' : 'badge-yellow'}">${m.feita ? 'Feita' : 'Pendente'}</span>
+      </div>
+    `).join('')
+    : '<p class="text-sm text-muted">Nenhuma refeição registrada.</p>';
+
+  const exerciciosHTML = S.exercicios.length
+    ? S.exercicios.slice(0,6).map(e => `
+      <div class="ex-item">
+        <div class="ex-icon-box">🏃</div>
+        <div style="flex:1">
+          <strong style="font-size:.85rem">${e.nome}</strong>
+          <div class="text-xs text-muted">${e.min || 0} min · ${e.series || '—'}</div>
+        </div>
+        <div style="font-weight:700;font-size:.85rem;color:var(--orange)">${e.kcal || 0} kcal</div>
+      </div>
+    `).join('')
+    : '<p class="text-sm text-muted">Nenhuma atividade registrada.</p>';
+
+  return `
+    <div class="readonly-note">
+      ${titulo} Esta tela é somente acompanhamento. Os dados aparecem sem botões de edição.
+    </div>
+
+    <div class="grid4">
+      <div class="stat-card"><div style="font-size:1.4rem">👤</div><div class="stat-value" style="font-size:1.05rem">${aluno.nome}</div><div class="stat-label">${dados.serie || '-'}</div></div>
+      <div class="stat-card"><div style="font-size:1.4rem">🔥</div><div class="stat-value">${kcal}</div><div class="stat-label">kcal consumidas</div></div>
+      <div class="stat-card"><div style="font-size:1.4rem">💧</div><div class="stat-value">${agua}</div><div class="stat-label">copos de água</div></div>
+      <div class="stat-card"><div style="font-size:1.4rem">⭐</div><div class="stat-value">${xp}</div><div class="stat-label">XP</div></div>
+    </div>
+
+    <div class="grid2 mt-4">
+      <div class="card">
+        <div class="card-title">Dados do aluno</div>
+        <div class="space-y-2">
+          <div class="history-item"><span class="text-sm text-muted">Nome</span><span class="font-semibold text-sm">${aluno.nome}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Idade</span><span class="font-semibold text-sm">${idade}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${dados.escola || '-'}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Série</span><span class="font-semibold text-sm">${dados.serie || '-'}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Altura</span><span class="font-semibold text-sm">${altura} cm</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Peso</span><span class="font-semibold text-sm">${peso} kg</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Objetivo</span><span class="font-semibold text-sm">${dados.objetivo || '-'}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Autorização</span><span class="${aluno.autorizado ? 'badge-green' : 'badge-yellow'}">${aluno.autorizado ? 'Autorizado' : 'Pendente'}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Resumo do app</div>
+        <div class="space-y-2">
+          <div class="history-item"><span class="text-sm text-muted">Refeições</span><span class="font-semibold text-sm">${S.refeicoes.length}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Atividades</span><span class="font-semibold text-sm">${exercicios}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Água</span><span class="font-semibold text-sm">${agua} copos</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Pesos registrados</span><span class="font-semibold text-sm">${S.pesos.length}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Conquistas</span><span class="font-semibold text-sm">${S.badges.length} de ${ALL_BADGES.length}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2 mt-4">
+      <div class="card">
+        <div class="card-title">Alimentação</div>
+        <div class="space-y-2">${refeicoesHTML}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Atividades físicas</div>
+        <div class="space-y-2">${exerciciosHTML}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderResponsavel(el) {
+  const conta = contaAtual();
+
+  if(conta && conta.tipo === 'responsavel'){
+    const filhos = filhosDoResponsavel(conta);
+    const filhoAtual = filhoSelecionadoResponsavel(conta);
+
+    el.innerHTML = `
+      <div class="page-title">
+        <h1>👨‍👩‍👧 <span class="text-primary">Acompanhamento dos filhos</span></h1>
+        <button class="btn btn-outline" onclick="baixarRelatorio()" style="color:#c2410c;border-color:#fed7aa;background:#fff7ed">📄 Baixar PDF</button>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title">Escolher filho</div>
+        ${filhos.length === 0
+          ? '<p class="text-sm text-muted">Nenhum filho vinculado ainda.</p>'
+          : `<select class="select" onchange="selecionarFilhoResponsavel(this.value)">
+              ${filhos.map(f => `<option value="${f.id}" ${filhoAtual && filhoAtual.id === f.id ? 'selected' : ''}>${f.nome} ${f.dados?.serie ? '• ' + f.dados.serie : ''}</option>`).join('')}
+            </select>`
+        }
+      </div>
+
+      ${painelAlunoReadonly(filhoAtual, 'Responsável:')}
+    `;
+    return;
+  }
+
+  if(conta && conta.tipo === 'escola'){
+    const series = seriesDisponiveis();
+    const alunos = alunosPorSerie();
+    const alunoAtual = alunoSelecionadoEscola();
+
+    el.innerHTML = `
+      <div class="page-title">
+        <h1>🏢 <span class="text-primary">Painel da Escola</span></h1>
+        <span class="badge-blue">${alunosCadastrados().length} alunos cadastrados</span>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Dados da escola</div>
+          <div class="space-y-2">
+            <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${conta.dados?.escola || '-'}</span></div>
+            <div class="history-item"><span class="text-sm text-muted">CNPJ</span><span class="font-semibold text-sm">${conta.dados?.cnpj || '-'}</span></div>
+            <div class="history-item"><span class="text-sm text-muted">Email</span><span class="font-semibold text-sm">${conta.dados?.email || '-'}</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Escolher série</div>
+          <select class="select" onchange="selecionarSerieEscola(this.value)">
+            <option value="">Todas as séries</option>
+            ${series.map(s => `<option value="${s}" ${AUTH.serieEscolaAtual === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid2 mt-4">
+        <div class="card">
+          <div class="card-title">Escolher aluno</div>
+          ${alunos.length === 0
+            ? '<p class="text-sm text-muted">Nenhum aluno encontrado nessa série.</p>'
+            : `<div class="space-y-2">
+                ${alunos.map(a => `
+                  <button class="aluno-list-btn ${alunoAtual && alunoAtual.id === a.id ? 'active' : ''}" onclick="selecionarAlunoEscola('${a.id}')">
+                    <strong>${a.nome}</strong>
+                    <div class="text-xs text-muted">${a.dados?.serie || '-'} · ${a.dados?.escola || '-'}</div>
+                  </button>
+                `).join('')}
+              </div>`
+          }
+        </div>
+
+        <div class="card">
+          <div class="card-title">Status do aluno</div>
+          ${alunoAtual
+            ? `<div class="space-y-2">
+                <div class="history-item"><span class="text-sm text-muted">Aluno</span><span class="font-semibold text-sm">${alunoAtual.nome}</span></div>
+                <div class="history-item"><span class="text-sm text-muted">Série</span><span class="font-semibold text-sm">${alunoAtual.dados?.serie || '-'}</span></div>
+                <div class="history-item"><span class="text-sm text-muted">Responsável</span><span class="font-semibold text-sm">${alunoAtual.dados?.emailPai || '-'}</span></div>
+                <div class="history-item"><span class="text-sm text-muted">Autorização</span><span class="${alunoAtual.autorizado ? 'badge-green' : 'badge-yellow'}">${alunoAtual.autorizado ? 'Autorizado' : 'Pendente'}</span></div>
+              </div>`
+            : '<p class="text-sm text-muted">Selecione um aluno para acompanhar.</p>'
+          }
+        </div>
+      </div>
+
+      <div class="mt-4">
+        ${painelAlunoReadonly(alunoAtual, 'Escola:')}
+      </div>
+    `;
+    return;
+  }
+
+  const p = S.perfil || {};
+  el.innerHTML = `
+    <div class="page-title">
+      <h1>👤 <span class="text-primary">Acompanhamento</span></h1>
+      <button class="btn btn-outline" onclick="baixarRelatorio()" style="color:#c2410c;border-color:#fed7aa;background:#fff7ed">📄 Baixar PDF</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Resumo</div>
+      <div class="space-y-2">
+        <div class="history-item"><span class="text-sm text-muted">Aluno</span><span class="font-semibold text-sm">${p.nome || '-'}</span></div>
+        <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${p.escola || '-'}</span></div>
+        <div class="history-item"><span class="text-sm text-muted">Série</span><span class="font-semibold text-sm">${p.serie || '-'}</span></div>
+      </div>
+    </div>
+  `;
+}
 function baixarRelatorio() {
   const p = S.perfil || {};
   const age = p.birthdate ? calcAge(p.birthdate) : (p.idade || 12);
@@ -1874,7 +2441,7 @@ function renderPerfil(el) {
         ${tdeePreview}
         <div class="card">
           <div class="card-title">Zona de risco</div>
-          <button class="btn w-full" style="border:1px solid #fecaca;background:#fef2f2;color:#dc2626" onclick="if(confirm('Tem certeza? Todos os dados serão apagados.')){localStorage.removeItem('${KEY}');location.reload()}">🗑 Limpar todos os dados</button>
+         <button class="btn w-full" style="border:1px solid #fecaca;background:#fef2f2;color:#dc2626" onclick="limparTudo()">🗑 Limpar todos os dados</button>
         </div>
       </div>
     </div>`;
@@ -1960,10 +2527,9 @@ let obForm = { nome:'', birthdate:'', altura:'', peso:'', sexo:'M', escola:'', a
 const TIPOS = [
   { id:'aluno', icon:'🧒', label:'Aluno', desc:'Criança ou jovem' },
   { id:'responsavel', icon:'👨‍👩‍👧', label:'Responsável', desc:'Pai, mãe ou tutor' },
-  { id:'professor', icon:'🏫', label:'Colaborador', desc:'Funcionário da escola' },
-  { id:'nutricionista', icon:'🩺', label:'Prof. de Saúde', desc:'Nutricionista, médico...' },
+  { id:'colaborador', icon:'🏫', label:'Colaborador', desc:'Funcionário da escola' },
+  { id:'escola', icon:'🏢', label:'Escola', desc:'Cadastro institucional' },
 ];
-
 const OB_OBJETIVOS = [
   { id:'Crescimento Saudável', icon:'🔥', label:'Crescimento Saudável', desc:'Perder peso de forma saudável' },
   { id:'saude', icon:'💚', label:'Saúde', desc:'Me sentir bem e prevenir doenças' },
@@ -2088,19 +2654,37 @@ function obFinish() {
   renderPage();
   showToast('🎉 Bem-vindo ao PulseFit! Sua jornada começa agora!');
 }
+function limparTudo(){
+  if(!confirm('Tem certeza? Todos os dados e contas serão apagados?')) return;
 
+  localStorage.removeItem(KEY);
+  localStorage.removeItem(AUTH_KEY);
+
+  S = {};
+  AUTH = { contas:[], logado:null, filhoAtual:null };
+
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+
+  authMode = 'login';
+  renderLogin();
+
+  showToast('Dados apagados. Faça login ou crie uma nova conta.');
+}
 // ===================== INIT =====================
 loadState();
+loadAuth();
+
 document.getElementById('p-data').value = new Date().toISOString().split('T')[0];
 
-if (S.onboarded) {
-  document.getElementById('onboarding').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  updateHeader();
-  buildNav();
-  renderPage();
+if(AUTH.logado && contaAtual()){
+  aplicarConta();
 } else {
-  renderOnboarding();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  renderLogin();
 }
 </script>
 </body>
