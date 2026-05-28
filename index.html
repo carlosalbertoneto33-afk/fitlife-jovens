@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>PulseFit — Combatendo a Obesidade nos Jovens</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href__="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:#f0f4ff;color:#1a2340;min-height:100vh}
@@ -304,31 +304,6 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
 .border-top-green{border-top:4px solid #4ade80}
 .border-top-blue{border-top:4px solid #60a5fa}
 .border-top-orange{border-top:4px solid #fb923c}
-.readonly-note{
-  background:#eff6ff;
-  border:1px solid #bfdbfe;
-  color:#1d4ed8;
-  border-radius:12px;
-  padding:12px;
-  font-size:.85rem;
-  margin-bottom:16px;
-}
-
-.aluno-list-btn{
-  width:100%;
-  border:1px solid var(--border);
-  background:var(--secondary);
-  border-radius:12px;
-  padding:10px 12px;
-  cursor:pointer;
-  text-align:left;
-  font-family:'DM Sans',sans-serif;
-}
-
-.aluno-list-btn.active{
-  border-color:var(--primary);
-  background:rgba(26,95,212,.08);
-}
 </style>
 </head>
 <body>
@@ -353,7 +328,7 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
 </div>
 
 <!-- ONBOARDING -->
-<div class="onboarding-overlay" id="onboarding" style="display:none">
+<div class="onboarding-overlay" id="onboarding">
   <div class="onboarding-card">
     <div class="onboarding-header">
       <div class="flex items-center gap-3 mb-3">
@@ -778,16 +753,9 @@ function aplicarConta(){
   };
 
   saveState();
-updateHeader();
-
-if(c.tipo === 'escola' || c.tipo === 'responsavel'){
-  currentPage = 'responsavel';
-} else {
-  currentPage = 'dashboard';
-}
-
-buildNav();
-renderPage();
+  updateHeader();
+  buildNav();
+  renderPage();
 }
 
 function loadState() {
@@ -1446,7 +1414,7 @@ let exCat = 'kids';
 function renderExercicios(el) {
   const totalKcal = S.exercicios.reduce((a,e) => a+e.kcal, 0);
   const totalMin = S.exercicios.reduce((a,e) => a+e.min, 0);
-  const catIcons = { 'deslocamento ativo':'🏃', 'exercícios físicos' :'💪', flexibilidade:'🧘', '🧒 Atividades Recreativas' : '🧒', '🔥 Atividades Energéticas' : '🔥' };
+  const catIcons = { 'deslocamento ativo':'🏃', 'exercícios físicos' :'💪', flexibilidade:'🧘', '🧒 Atividades Recreativas' : '🔥 Atividades Energéticas'};
   const catFilters = [
     { id:'kids', label:'🧒 Atividades Recreativas' },
     { id:'perda', label:'🔥 Atividades Energéticas' },
@@ -2041,163 +2009,12 @@ function renderConquistas(el) {
 }
 
 // ===================== RESPONSAVEL =====================
-function alunosCadastrados(){
-  return AUTH.contas.filter(c => c.tipo === 'aluno');
-}
-
-function seriesDisponiveis(){
-  return [...new Set(alunosCadastrados().map(a => a.dados?.serie).filter(Boolean))];
-}
-
-function alunosPorSerie(){
-  const alunos = alunosCadastrados();
-  if(!AUTH.serieEscolaAtual) return alunos;
-  return alunos.filter(a => a.dados?.serie === AUTH.serieEscolaAtual);
-}
-
-function alunoSelecionadoEscola(){
-  const alunos = alunosPorSerie();
-  return alunos.find(a => a.id === AUTH.alunoEscolaAtual) || alunos[0] || null;
-}
-
-function selecionarSerieEscola(serie){
-  AUTH.serieEscolaAtual = serie;
-  AUTH.alunoEscolaAtual = null;
-  saveAuth();
-  renderPage();
-}
-
-function selecionarAlunoEscola(id){
-  AUTH.alunoEscolaAtual = id;
-  saveAuth();
-  renderPage();
-}
-
-function filhosDoResponsavel(conta){
-  const emailResp = (conta.dados?.email || '').toLowerCase();
-  const porEmail = alunosCadastrados().filter(a => (a.dados?.emailPai || '').toLowerCase() === emailResp);
-
-  if(porEmail.length) return porEmail;
-
-  return (conta.filhos || []).map(f => ({
-    id:f.id,
-    nome:f.nome,
-    tipo:'aluno',
-    dados:{ serie:'-', escola:'-' },
-    autorizado:true
-  }));
-}
-
-function filhoSelecionadoResponsavel(conta){
-  const filhos = filhosDoResponsavel(conta);
-  return filhos.find(f => f.id === AUTH.filhoAtual) || filhos[0] || null;
-}
-
-function selecionarFilhoResponsavel(id){
-  AUTH.filhoAtual = id;
-  saveAuth();
-  renderPage();
-}
-
-function painelAlunoReadonly(aluno, titulo){
-  if(!aluno){
-    return '<div class="card"><p class="text-sm text-muted">Nenhum aluno encontrado.</p></div>';
-  }
-
-  const dados = aluno.dados || {};
-  const idade = dados.birthdate ? calcAge(dados.birthdate) + ' anos' : '-';
-  const peso = dados.peso || '-';
-  const altura = dados.altura || '-';
-  const agua = S.agua || 0;
-  const kcal = S.refeicoes.filter(m => m.feita).reduce((a,m) => a + m.kcal, 0);
-  const exercicios = S.exercicios.length;
-  const xp = S.xp || 0;
-
-  const refeicoesHTML = S.refeicoes.length
-    ? S.refeicoes.slice(0,6).map(m => `
-      <div class="meal-item">
-        <span class="meal-item-icon">${m.icon || '🍽️'}</span>
-        <div class="meal-item-info">
-          <strong>${m.nome}</strong>
-          <small>${m.hora || '--:--'} · ${m.kcal || 0} kcal</small>
-        </div>
-        <span class="${m.feita ? 'badge-green' : 'badge-yellow'}">${m.feita ? 'Feita' : 'Pendente'}</span>
-      </div>
-    `).join('')
-    : '<p class="text-sm text-muted">Nenhuma refeição registrada.</p>';
-
-  const exerciciosHTML = S.exercicios.length
-    ? S.exercicios.slice(0,6).map(e => `
-      <div class="ex-item">
-        <div class="ex-icon-box">🏃</div>
-        <div style="flex:1">
-          <strong style="font-size:.85rem">${e.nome}</strong>
-          <div class="text-xs text-muted">${e.min || 0} min · ${e.series || '—'}</div>
-        </div>
-        <div style="font-weight:700;font-size:.85rem;color:var(--orange)">${e.kcal || 0} kcal</div>
-      </div>
-    `).join('')
-    : '<p class="text-sm text-muted">Nenhuma atividade registrada.</p>';
-
-  return `
-    <div class="readonly-note">
-      ${titulo} Esta tela é somente acompanhamento. Os dados aparecem sem botões de edição.
-    </div>
-
-    <div class="grid4">
-      <div class="stat-card"><div style="font-size:1.4rem">👤</div><div class="stat-value" style="font-size:1.05rem">${aluno.nome}</div><div class="stat-label">${dados.serie || '-'}</div></div>
-      <div class="stat-card"><div style="font-size:1.4rem">🔥</div><div class="stat-value">${kcal}</div><div class="stat-label">kcal consumidas</div></div>
-      <div class="stat-card"><div style="font-size:1.4rem">💧</div><div class="stat-value">${agua}</div><div class="stat-label">copos de água</div></div>
-      <div class="stat-card"><div style="font-size:1.4rem">⭐</div><div class="stat-value">${xp}</div><div class="stat-label">XP</div></div>
-    </div>
-
-    <div class="grid2 mt-4">
-      <div class="card">
-        <div class="card-title">Dados do aluno</div>
-        <div class="space-y-2">
-          <div class="history-item"><span class="text-sm text-muted">Nome</span><span class="font-semibold text-sm">${aluno.nome}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Idade</span><span class="font-semibold text-sm">${idade}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${dados.escola || '-'}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Série</span><span class="font-semibold text-sm">${dados.serie || '-'}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Altura</span><span class="font-semibold text-sm">${altura} cm</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Peso</span><span class="font-semibold text-sm">${peso} kg</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Objetivo</span><span class="font-semibold text-sm">${dados.objetivo || '-'}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Autorização</span><span class="${aluno.autorizado ? 'badge-green' : 'badge-yellow'}">${aluno.autorizado ? 'Autorizado' : 'Pendente'}</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Resumo do app</div>
-        <div class="space-y-2">
-          <div class="history-item"><span class="text-sm text-muted">Refeições</span><span class="font-semibold text-sm">${S.refeicoes.length}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Atividades</span><span class="font-semibold text-sm">${exercicios}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Água</span><span class="font-semibold text-sm">${agua} copos</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Pesos registrados</span><span class="font-semibold text-sm">${S.pesos.length}</span></div>
-          <div class="history-item"><span class="text-sm text-muted">Conquistas</span><span class="font-semibold text-sm">${S.badges.length} de ${ALL_BADGES.length}</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid2 mt-4">
-      <div class="card">
-        <div class="card-title">Alimentação</div>
-        <div class="space-y-2">${refeicoesHTML}</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Atividades físicas</div>
-        <div class="space-y-2">${exerciciosHTML}</div>
-      </div>
-    </div>
-  `;
-}
-
 function renderResponsavel(el) {
   const conta = contaAtual();
+  const p = S.perfil || {};
 
   if(conta && conta.tipo === 'responsavel'){
-    const filhos = filhosDoResponsavel(conta);
-    const filhoAtual = filhoSelecionadoResponsavel(conta);
+    const filhoAtual = conta.filhos.find(f => f.id === AUTH.filhoAtual) || conta.filhos[0];
 
     el.innerHTML = `
       <div class="page-title">
@@ -2206,88 +2023,79 @@ function renderResponsavel(el) {
       </div>
 
       <div class="card mb-4">
-        <div class="card-title">Escolher filho</div>
-        ${filhos.length === 0
-          ? '<p class="text-sm text-muted">Nenhum filho vinculado ainda.</p>'
-          : `<select class="select" onchange="selecionarFilhoResponsavel(this.value)">
-              ${filhos.map(f => `<option value="${f.id}" ${filhoAtual && filhoAtual.id === f.id ? 'selected' : ''}>${f.nome} ${f.dados?.serie ? '• ' + f.dados.serie : ''}</option>`).join('')}
-            </select>`
-        }
+        <div class="card-title">Selecionar filho</div>
+        <select class="select" onchange="AUTH.filhoAtual=this.value;saveAuth();renderPage()">
+          ${conta.filhos.map(f => `<option value="${f.id}" ${filhoAtual && filhoAtual.id===f.id?'selected':''}>${f.nome}</option>`).join('')}
+        </select>
       </div>
 
-      ${painelAlunoReadonly(filhoAtual, 'Responsável:')}
+      <div class="grid4">
+        <div class="stat-card"><div style="font-size:1.4rem">👤</div><div class="stat-value" style="font-size:1.1rem">${filhoAtual ? filhoAtual.nome : 'Filho'}</div><div class="stat-label">acompanhado</div></div>
+        <div class="stat-card"><div style="font-size:1.4rem">🥗</div><div class="stat-value">${S.refeicoes.length}</div><div class="stat-label">refeições</div></div>
+        <div class="stat-card"><div style="font-size:1.4rem">💧</div><div class="stat-value">${S.agua}</div><div class="stat-label">copos de água</div></div>
+        <div class="stat-card"><div style="font-size:1.4rem">⭐</div><div class="stat-value">${S.xp || 0}</div><div class="stat-label">XP</div></div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-title">Autorização</div>
+        <p class="text-sm text-muted">Aqui o responsável acompanha o rendimento individual do filho selecionado.</p>
+      </div>
     `;
     return;
   }
 
   if(conta && conta.tipo === 'escola'){
-    const series = seriesDisponiveis();
-    const alunos = alunosPorSerie();
-    const alunoAtual = alunoSelecionadoEscola();
-
+    const alunos = AUTH.contas.filter(c => c.tipo === 'aluno');
     el.innerHTML = `
       <div class="page-title">
         <h1>🏢 <span class="text-primary">Painel da Escola</span></h1>
-        <span class="badge-blue">${alunosCadastrados().length} alunos cadastrados</span>
+        <span class="badge-blue">${alunos.length} alunos cadastrados</span>
       </div>
 
-      <div class="grid2">
-        <div class="card">
-          <div class="card-title">Dados da escola</div>
-          <div class="space-y-2">
-            <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${conta.dados?.escola || '-'}</span></div>
-            <div class="history-item"><span class="text-sm text-muted">CNPJ</span><span class="font-semibold text-sm">${conta.dados?.cnpj || '-'}</span></div>
-            <div class="history-item"><span class="text-sm text-muted">Email</span><span class="font-semibold text-sm">${conta.dados?.email || '-'}</span></div>
+      <div class="card mb-4">
+        <div class="card-title">Dados da escola</div>
+        <div class="space-y-2">
+          <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${conta.dados.escola || '-'}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">CNPJ</span><span class="font-semibold text-sm">${conta.dados.cnpj || '-'}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Email</span><span class="font-semibold text-sm">${conta.dados.email || '-'}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Alunos</div>
+        ${alunos.length === 0 ? '<p class="text-sm text-muted">Nenhum aluno cadastrado ainda.</p>' : alunos.map(a => `
+          <div class="history-item">
+            <span class="text-sm">👤 ${a.nome} ${a.dados.serie ? '• '+a.dados.serie : ''}</span>
+            <span class="${a.autorizado ? 'badge-green' : 'badge-yellow'}">${a.autorizado ? 'Autorizado' : 'Pendente'}</span>
           </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Escolher série</div>
-          <select class="select" onchange="selecionarSerieEscola(this.value)">
-            <option value="">Todas as séries</option>
-            ${series.map(s => `<option value="${s}" ${AUTH.serieEscolaAtual === s ? 'selected' : ''}>${s}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-
-      <div class="grid2 mt-4">
-        <div class="card">
-          <div class="card-title">Escolher aluno</div>
-          ${alunos.length === 0
-            ? '<p class="text-sm text-muted">Nenhum aluno encontrado nessa série.</p>'
-            : `<div class="space-y-2">
-                ${alunos.map(a => `
-                  <button class="aluno-list-btn ${alunoAtual && alunoAtual.id === a.id ? 'active' : ''}" onclick="selecionarAlunoEscola('${a.id}')">
-                    <strong>${a.nome}</strong>
-                    <div class="text-xs text-muted">${a.dados?.serie || '-'} · ${a.dados?.escola || '-'}</div>
-                  </button>
-                `).join('')}
-              </div>`
-          }
-        </div>
-
-        <div class="card">
-          <div class="card-title">Status do aluno</div>
-          ${alunoAtual
-            ? `<div class="space-y-2">
-                <div class="history-item"><span class="text-sm text-muted">Aluno</span><span class="font-semibold text-sm">${alunoAtual.nome}</span></div>
-                <div class="history-item"><span class="text-sm text-muted">Série</span><span class="font-semibold text-sm">${alunoAtual.dados?.serie || '-'}</span></div>
-                <div class="history-item"><span class="text-sm text-muted">Responsável</span><span class="font-semibold text-sm">${alunoAtual.dados?.emailPai || '-'}</span></div>
-                <div class="history-item"><span class="text-sm text-muted">Autorização</span><span class="${alunoAtual.autorizado ? 'badge-green' : 'badge-yellow'}">${alunoAtual.autorizado ? 'Autorizado' : 'Pendente'}</span></div>
-              </div>`
-            : '<p class="text-sm text-muted">Selecione um aluno para acompanhar.</p>'
-          }
-        </div>
-      </div>
-
-      <div class="mt-4">
-        ${painelAlunoReadonly(alunoAtual, 'Escola:')}
+        `).join('')}
       </div>
     `;
     return;
   }
 
-  const p = S.perfil || {};
+  if(conta && conta.tipo === 'colaborador'){
+    el.innerHTML = `
+      <div class="page-title">
+        <h1>🏫 <span class="text-primary">Área do Colaborador</span></h1>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Dados do colaborador</div>
+          <div class="history-item"><span class="text-sm text-muted">Nome</span><span class="font-semibold text-sm">${conta.nome}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Função</span><span class="font-semibold text-sm">${conta.dados.funcao || '-'}</span></div>
+          <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${conta.dados.escola || '-'}</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Acompanhamento escolar</div>
+          <p class="text-sm text-muted">O colaborador pode apoiar rotinas, atividades e registros escolares.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   el.innerHTML = `
     <div class="page-title">
       <h1>👤 <span class="text-primary">Acompanhamento</span></h1>
@@ -2300,10 +2108,12 @@ function renderResponsavel(el) {
         <div class="history-item"><span class="text-sm text-muted">Aluno</span><span class="font-semibold text-sm">${p.nome || '-'}</span></div>
         <div class="history-item"><span class="text-sm text-muted">Escola</span><span class="font-semibold text-sm">${p.escola || '-'}</span></div>
         <div class="history-item"><span class="text-sm text-muted">Série</span><span class="font-semibold text-sm">${p.serie || '-'}</span></div>
+        <div class="history-item"><span class="text-sm text-muted">Autorização</span><span class="${p.autorizado ? 'badge-green' : 'badge-yellow'}">${p.autorizado ? 'Autorizado' : 'Pendente'}</span></div>
       </div>
     </div>
   `;
 }
+
 function baixarRelatorio() {
   const p = S.perfil || {};
   const age = p.birthdate ? calcAge(p.birthdate) : (p.idade || 12);
