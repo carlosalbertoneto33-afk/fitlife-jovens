@@ -507,7 +507,7 @@ function calcTDEE(peso,altura,bd,sexo,atv){
 }
 function calcMacros(peso,altura,bd,sexo,obj,atv){
   const tdee=calcTDEE(peso,altura,bd,sexo,atv);
-  const pf={Crescimento Saúdavel:1.6,saúde:1.4,equilíbrio:1.6,deslocamento ativo:1.4,exercício físico:1.8};
+  const pf={emagrecer:1.6,saude:1.4,esporte:1.6,movimento:1.4,massa:1.8};
   const prot=Math.round((pf[obj]||1.4)*peso);
   const gord=Math.round(tdee*0.27/9);
   const carb=Math.round(Math.max(100,(tdee-prot*4-gord*9)/4));
@@ -808,11 +808,11 @@ function confirmarSair(){if(confirm('Deseja sair da sua conta?')) sair();}
 // ALIMENTACAO
 // ============================================================
 const FOOD_BY_OBJ={
-  saúde:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🥑',n:'Abacate',c:'160 kcal/100g',tag:'gordura boa',color:'green'},{e:'🐟',n:'Salmão',c:'208 kcal/100g',tag:'ômega-3',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'moderação',color:'red'}],
-  crescimento:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🍗',n:'Frango',c:'165 kcal/100g',tag:'proteína',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'evitar',color:'red'}],
+  saude:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🥑',n:'Abacate',c:'160 kcal/100g',tag:'gordura boa',color:'green'},{e:'🐟',n:'Salmão',c:'208 kcal/100g',tag:'ômega-3',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'moderação',color:'red'}],
+Crescimento:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🍗',n:'Frango',c:'165 kcal/100g',tag:'proteína',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'evitar',color:'red'}],
   esporte:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🥩',n:'Carne magra',c:'143 kcal/100g',tag:'proteína',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🧃',n:'Suco natural',c:'45 kcal/100ml',tag:'equilíbrio',color:'yellow'},{e:'🥤',n:'Refrigerante',c:'41 kcal/100ml',tag:'evitar',color:'red'}],
   massa:[{e:'🥛',n:'Leite integral',c:'61 kcal/100ml',tag:'crescimento',color:'green'},{e:'🥚',n:'Ovos',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🧀',n:'Queijo',c:'402 kcal/100g',tag:'cálcio',color:'yellow'},{e:'🫐',n:'Blueberry',c:'57 kcal/100g',tag:'antioxidante',color:'green'},{e:'🍕',n:'Pizza',c:'266 kcal/fatia',tag:'moderação',color:'red'}],
-  Deslocamento :[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🥜',n:'Amendoim',c:'567 kcal/100g',tag:'moderado',color:'yellow'},{e:'🍫',n:'Chocolate 70%',c:'598 kcal/100g',tag:'moderação',color:'red'}],
+  movimento:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🥜',n:'Amendoim',c:'567 kcal/100g',tag:'moderado',color:'yellow'},{e:'🍫',n:'Chocolate 70%',c:'598 kcal/100g',tag:'moderação',color:'red'}],
 };
 let foodFilter='saude';
 function renderAlimentacao(el){
@@ -873,11 +873,11 @@ function renderAlimentacao(el){
 }
 function setFoodFilter(f){foodFilter=f;renderPage();}
 const MEAL_PLANS={
-  saúde:[{nome:'Café saudável',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false,desc:'Iogurte + frutas + granola'},{nome:'Almoço nutritivo',hora:'12:00',kcal:580,prot:38,carb:60,gord:15,icon:'☀️',feita:false,desc:'Salmão + quinoa + brócolis'},{nome:'Jantar balanceado',hora:'19:00',kcal:400,prot:30,carb:45,gord:12,icon:'🌙',feita:false,desc:'Omelete + salada'}],
-  crescimento saudável:[{nome:'Café saudável',hora:'07:00',kcal:300,prot:20,carb:35,gord:8,icon:'🌅',feita:false,desc:'Iogurte + frutas'},{nome:'Almoço equilibrado',hora:'12:00',kcal:500,prot:35,carb:55,gord:12,icon:'☀️',feita:false,desc:'Frango + salada'},{nome:'Jantar leve',hora:'19:00',kcal:350,prot:25,carb:35,gord:10,icon:'🌙',feita:false,desc:'Omelete + legumes'}],
+  saude:[{nome:'Café saudável',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false,desc:'Iogurte + frutas + granola'},{nome:'Almoço nutritivo',hora:'12:00',kcal:580,prot:38,carb:60,gord:15,icon:'☀️',feita:false,desc:'Salmão + quinoa + brócolis'},{nome:'Jantar balanceado',hora:'19:00',kcal:400,prot:30,carb:45,gord:12,icon:'🌙',feita:false,desc:'Omelete + salada'}],
+  emagrecer:[{nome:'Café saudável',hora:'07:00',kcal:300,prot:20,carb:35,gord:8,icon:'🌅',feita:false,desc:'Iogurte + frutas'},{nome:'Almoço equilibrado',hora:'12:00',kcal:500,prot:35,carb:55,gord:12,icon:'☀️',feita:false,desc:'Frango + salada'},{nome:'Jantar leve',hora:'19:00',kcal:350,prot:25,carb:35,gord:10,icon:'🌙',feita:false,desc:'Omelete + legumes'}],
   esporte:[{nome:'Café pré-treino',hora:'07:00',kcal:500,prot:30,carb:65,gord:10,icon:'🌅',feita:false,desc:'Aveia + banana'},{nome:'Almoço proteico',hora:'12:00',kcal:700,prot:50,carb:70,gord:18,icon:'☀️',feita:false,desc:'Frango + arroz + feijão'},{nome:'Jantar recuperação',hora:'19:00',kcal:550,prot:45,carb:55,gord:14,icon:'🌙',feita:false,desc:'Atum + batata doce'}],
   massa:[{nome:'Café hipercalórico',hora:'07:00',kcal:600,prot:40,carb:75,gord:15,icon:'🌅',feita:false,desc:'Ovos + aveia + leite'},{nome:'Almoço completo',hora:'12:00',kcal:800,prot:55,carb:85,gord:20,icon:'☀️',feita:false,desc:'Carne + arroz + feijão'},{nome:'Jantar proteico',hora:'19:00',kcal:650,prot:50,carb:70,gord:18,icon:'🌙',feita:false,desc:'Frango + batata doce'}],
-  deslocamento ativo:[{nome:'Café energético',hora:'07:00',kcal:400,prot:20,carb:55,gord:10,icon:'🌅',feita:false,desc:'Tapioca + ovo'},{nome:'Almoço equilibrado',hora:'12:00',kcal:600,prot:35,carb:70,gord:14,icon:'☀️',feita:false,desc:'Frango + arroz integral'},{nome:'Jantar leve',hora:'19:00',kcal:380,prot:28,carb:40,gord:10,icon:'🌙',feita:false,desc:'Sopa + pão integral'}],
+  movimento:[{nome:'Café energético',hora:'07:00',kcal:400,prot:20,carb:55,gord:10,icon:'🌅',feita:false,desc:'Tapioca + ovo'},{nome:'Almoço equilibrado',hora:'12:00',kcal:600,prot:35,carb:70,gord:14,icon:'☀️',feita:false,desc:'Frango + arroz integral'},{nome:'Jantar leve',hora:'19:00',kcal:380,prot:28,carb:40,gord:10,icon:'🌙',feita:false,desc:'Sopa + pão integral'}],
 };
 function sugerirAlimentacao(){
   const obj=(S.perfil&&S.perfil.objetivo)||'saude';
@@ -904,7 +904,7 @@ const EX_SUGS={
   perda:[{n:'Caminhada rápida',d:'30 min',k:180,how:'Caminhe em ritmo firme.'},{n:'Corrida',d:'30 min',k:300,how:'Alterne caminhada e corrida.'},{n:'Agachamento',d:'3×15',k:120,how:'Pés na largura dos ombros, desça com controle.'},{n:'Jumping Jacks',d:'15 min',k:180,how:'Abra pernas e braços ao saltar.'},{n:'Bicicleta',d:'35 min',k:250,how:'Pedale em ritmo confortável.'}],
   cardio:[{n:'Ciclismo',d:'45 min',k:350,how:'Mantenha cadência constante.'},{n:'Natação',d:'30 min',k:280,how:'Aqueça antes e alterne estilos.'},{n:'Pular corda',d:'20 min',k:240,how:'Séries curtas com intervalos.'},{n:'Corrida intervalada',d:'25 min',k:300,how:'1 min correndo, 2 caminhando.'},{n:'Futebol',d:'45 min',k:380,how:'Aqueça antes e jogue com segurança.'}],
   massa:[{n:'Agachamento',d:'4×8',k:120,how:'Desça com controle, costas retas.'},{n:'Flexão',d:'3×10',k:90,how:'Corpo alinhado durante o movimento.'},{n:'Prancha',d:'3×30s',k:60,how:'Abdômen firme e coluna alinhada.'},{n:'Rosca bíceps',d:'3×12',k:60,how:'Suba sem balançar o corpo.'},{n:'Avanço',d:'3×12',k:110,how:'Passo à frente, equilíbrio.'}],
-  flexibilidade:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
+  flexib:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
 };
 let exCat='kids';
 function renderExercicios(el){
