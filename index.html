@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PulseFit — Vida Saudável na juventude</title>
+<title>PulseFit — Vida Saudável na Juventude</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',sans-serif;background:#f0f4ff;color:#1a2340;min-height:100vh}
@@ -165,13 +165,14 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
 </head>
 <body>
 <div id="toast"></div>
+
 <!-- LOGIN -->
 <div class="onboarding-overlay" id="login-screen" style="display:none">
   <div class="onboarding-card">
     <div class="onboarding-header">
       <div class="flex items-center gap-3" style="margin-bottom:10px">
         <div style="width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">🌱</div>
-        <div><div style="font-weight:700;font-size:1.1rem">PulseFit</div><div style="font-size:.8rem;color:rgba(255,255,255,.8)">Vida Saudável na juventude</div></div>
+        <div><div style="font-weight:700;font-size:1.1rem">PulseFit</div><div style="font-size:.8rem;color:rgba(255,255,255,.8)">Vida Saudável na Juventude</div></div>
       </div>
       <p style="font-size:.85rem;color:rgba(255,255,255,.8)">Entre ou crie sua conta</p>
     </div>
@@ -184,7 +185,7 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
   <header>
     <div class="logo-box">
       <div class="logo-icon">P</div>
-      <div><div class="logo-text">PulseFit</div><div class="logo-sub">Vida Saudável na juventude</div></div>
+      <div><div class="logo-text">PulseFit</div><div class="logo-sub">Vida Saudável na Juventude</div></div>
     </div>
     <div class="header-right">
       <div class="xp-badge" id="header-xp">🌱 Iniciante · 0 XP</div>
@@ -229,7 +230,7 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
       </div>
       <div class="grid2">
         <div><label class="field-label">Categoria</label>
-          <select class="select" id="e-cat"><option value="Deslocamento Ativo">🏃 </option><option value="forca">💪 Atividade física</option><option value="flexibilidade">🧘 Flexibilidade</option><option value="Atividade energética">🔥 Atvidade Energética</option><option value="Atividade Recreativa">🧒 Atividade Recreativa</option></select>
+          <select class="select" id="e-cat"><option value="deslocamento ativo">🏃 Deslocamento Ativo</option><option value="Exercício Físico">💪 Exercício Físico</option><option value="flexibilidade">🧘 Flexibilidade</option><option value="Atividade Recreativa ">🧒 Atividade Recreativa </option><option value="Crescimento Saudável">🔥 Crescimento Saudável</option></select>
         </div>
         <div><label class="field-label">Séries × Reps</label><input class="input" id="e-series" placeholder="3 × 12"></div>
       </div>
@@ -390,11 +391,11 @@ function camposCadastro(){
     </div>
     <div><label class="field-label">Objetivo</label>
       <select class="select" id="c-obj">
-        <option value="saude">💚 Saúde geral</option>
-        <option value="Crescimento Saudável">🔥 Crescimento Saudável</option>
+        <option value="saúde">💚 Saúde geral</option>
+        <option value="Crescimento Saudável">🌱 Crescimento Saudável</option>
         <option value="Equilíbrio">⚖️ Equilíbrio</option>
         <option value="Deslocamento Ativo">🏃 Deslocamento Ativo</option>
-        <option value="Exercício Físico">💪 Exercício Físico</option>
+        <option value="Exercícios Físicos">💪 Exercícios Físicos</option>
       </select>
     </div>`;
   }
@@ -507,7 +508,7 @@ function calcTDEE(peso,altura,bd,sexo,atv){
 }
 function calcMacros(peso,altura,bd,sexo,obj,atv){
   const tdee=calcTDEE(peso,altura,bd,sexo,atv);
-  const pf={emagrecer:1.6,saude:1.4,esporte:1.6,movimento:1.4,massa:1.8};
+  const pf={"Crescimento Saudável":1.6,"saúde":1.4,"Equilíbrio":1.6,"Deslocamento Ativo":1.4,"Exercício Físico":1.8};
   const prot=Math.round((pf[obj]||1.4)*peso);
   const gord=Math.round(tdee*0.27/9);
   const carb=Math.round(Math.max(100,(tdee-prot*4-gord*9)/4));
@@ -808,11 +809,11 @@ function confirmarSair(){if(confirm('Deseja sair da sua conta?')) sair();}
 // ALIMENTACAO
 // ============================================================
 const FOOD_BY_OBJ={
-  saude:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🥑',n:'Abacate',c:'160 kcal/100g',tag:'gordura boa',color:'green'},{e:'🐟',n:'Salmão',c:'208 kcal/100g',tag:'ômega-3',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'moderação',color:'red'}],
-Crescimento:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🍗',n:'Frango',c:'165 kcal/100g',tag:'proteína',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'evitar',color:'red'}],
+  saúde:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🥑',n:'Abacate',c:'160 kcal/100g',tag:'gordura boa',color:'green'},{e:'🐟',n:'Salmão',c:'208 kcal/100g',tag:'ômega-3',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'moderação',color:'red'}],
+  Crescimento:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🍗',n:'Frango',c:'165 kcal/100g',tag:'proteína',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'evitar',color:'red'}],
   esporte:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🥩',n:'Carne magra',c:'143 kcal/100g',tag:'proteína',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🧃',n:'Suco natural',c:'45 kcal/100ml',tag:'equilíbrio',color:'yellow'},{e:'🥤',n:'Refrigerante',c:'41 kcal/100ml',tag:'evitar',color:'red'}],
   massa:[{e:'🥛',n:'Leite integral',c:'61 kcal/100ml',tag:'crescimento',color:'green'},{e:'🥚',n:'Ovos',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🧀',n:'Queijo',c:'402 kcal/100g',tag:'cálcio',color:'yellow'},{e:'🫐',n:'Blueberry',c:'57 kcal/100g',tag:'antioxidante',color:'green'},{e:'🍕',n:'Pizza',c:'266 kcal/fatia',tag:'moderação',color:'red'}],
-  movimento:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🥜',n:'Amendoim',c:'567 kcal/100g',tag:'moderado',color:'yellow'},{e:'🍫',n:'Chocolate 70%',c:'598 kcal/100g',tag:'moderação',color:'red'}],
+  Deslocamento:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🥜',n:'Amendoim',c:'567 kcal/100g',tag:'moderado',color:'yellow'},{e:'🍫',n:'Chocolate 70%',c:'598 kcal/100g',tag:'moderação',color:'red'}],
 };
 let foodFilter='saude';
 function renderAlimentacao(el){
@@ -823,7 +824,7 @@ function renderAlimentacao(el){
   const totalProt=done.reduce((a,m)=>a+m.prot,0);
   const totalCarb=done.reduce((a,m)=>a+m.carb,0);
   const totalGord=done.reduce((a,m)=>a+m.gord,0);
-  const filters=['Saúde','Crescimento Saudável','Equilíbrio','exercícios físicos','Deslocamento Ativo'];
+  const filters=['Crescimento Saudável','saúde','equilíbrio','Exercício Físico','Deslocamento Ativo'];
   el.innerHTML=`
     <div class="page-title"><h1>🥗 <span class="text-primary">Alimentação</span></h1>
       <div class="flex gap-2">
@@ -873,11 +874,11 @@ function renderAlimentacao(el){
 }
 function setFoodFilter(f){foodFilter=f;renderPage();}
 const MEAL_PLANS={
-  saude:[{nome:'Café saudável',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false,desc:'Iogurte + frutas + granola'},{nome:'Almoço nutritivo',hora:'12:00',kcal:580,prot:38,carb:60,gord:15,icon:'☀️',feita:false,desc:'Salmão + quinoa + brócolis'},{nome:'Jantar balanceado',hora:'19:00',kcal:400,prot:30,carb:45,gord:12,icon:'🌙',feita:false,desc:'Omelete + salada'}],
-  emagrecer:[{nome:'Café saudável',hora:'07:00',kcal:300,prot:20,carb:35,gord:8,icon:'🌅',feita:false,desc:'Iogurte + frutas'},{nome:'Almoço equilibrado',hora:'12:00',kcal:500,prot:35,carb:55,gord:12,icon:'☀️',feita:false,desc:'Frango + salada'},{nome:'Jantar leve',hora:'19:00',kcal:350,prot:25,carb:35,gord:10,icon:'🌙',feita:false,desc:'Omelete + legumes'}],
+  saúde:[{nome:'Café saudável',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false,desc:'Iogurte + frutas + granola'},{nome:'Almoço nutritivo',hora:'12:00',kcal:580,prot:38,carb:60,gord:15,icon:'☀️',feita:false,desc:'Salmão + quinoa + brócolis'},{nome:'Jantar balanceado',hora:'19:00',kcal:400,prot:30,carb:45,gord:12,icon:'🌙',feita:false,desc:'Omelete + salada'}],
+  crescimento:[{nome:'Café saudável',hora:'07:00',kcal:300,prot:20,carb:35,gord:8,icon:'🌅',feita:false,desc:'Iogurte + frutas'},{nome:'Almoço equilibrado',hora:'12:00',kcal:500,prot:35,carb:55,gord:12,icon:'☀️',feita:false,desc:'Frango + salada'},{nome:'Jantar leve',hora:'19:00',kcal:350,prot:25,carb:35,gord:10,icon:'🌙',feita:false,desc:'Omelete + legumes'}],
   esporte:[{nome:'Café pré-treino',hora:'07:00',kcal:500,prot:30,carb:65,gord:10,icon:'🌅',feita:false,desc:'Aveia + banana'},{nome:'Almoço proteico',hora:'12:00',kcal:700,prot:50,carb:70,gord:18,icon:'☀️',feita:false,desc:'Frango + arroz + feijão'},{nome:'Jantar recuperação',hora:'19:00',kcal:550,prot:45,carb:55,gord:14,icon:'🌙',feita:false,desc:'Atum + batata doce'}],
   massa:[{nome:'Café hipercalórico',hora:'07:00',kcal:600,prot:40,carb:75,gord:15,icon:'🌅',feita:false,desc:'Ovos + aveia + leite'},{nome:'Almoço completo',hora:'12:00',kcal:800,prot:55,carb:85,gord:20,icon:'☀️',feita:false,desc:'Carne + arroz + feijão'},{nome:'Jantar proteico',hora:'19:00',kcal:650,prot:50,carb:70,gord:18,icon:'🌙',feita:false,desc:'Frango + batata doce'}],
-  movimento:[{nome:'Café energético',hora:'07:00',kcal:400,prot:20,carb:55,gord:10,icon:'🌅',feita:false,desc:'Tapioca + ovo'},{nome:'Almoço equilibrado',hora:'12:00',kcal:600,prot:35,carb:70,gord:14,icon:'☀️',feita:false,desc:'Frango + arroz integral'},{nome:'Jantar leve',hora:'19:00',kcal:380,prot:28,carb:40,gord:10,icon:'🌙',feita:false,desc:'Sopa + pão integral'}],
+  Deslocamento:[{nome:'Café energético',hora:'07:00',kcal:400,prot:20,carb:55,gord:10,icon:'🌅',feita:false,desc:'Tapioca + ovo'},{nome:'Almoço equilibrado',hora:'12:00',kcal:600,prot:35,carb:70,gord:14,icon:'☀️',feita:false,desc:'Frango + arroz integral'},{nome:'Jantar leve',hora:'19:00',kcal:380,prot:28,carb:40,gord:10,icon:'🌙',feita:false,desc:'Sopa + pão integral'}],
 };
 function sugerirAlimentacao(){
   const obj=(S.perfil&&S.perfil.objetivo)||'saude';
@@ -903,14 +904,14 @@ const EX_SUGS={
   kids:[{n:'Pega-pega',d:'20 min',k:150,how:'Corra para fugir ou pegar os amigos.'},{n:'Amarelinha',d:'15 min',k:80,how:'Pule casa por casa com equilíbrio.'},{n:'Pular corda',d:'15 min',k:120,how:'Comece devagar e aumente o ritmo.'},{n:'Dança livre',d:'30 min',k:160,how:'Escolha uma música animada e dance!'},{n:'Futebol recreativo',d:'40 min',k:200,how:'Jogue com amigos e se divirta.'}],
   perda:[{n:'Caminhada rápida',d:'30 min',k:180,how:'Caminhe em ritmo firme.'},{n:'Corrida',d:'30 min',k:300,how:'Alterne caminhada e corrida.'},{n:'Agachamento',d:'3×15',k:120,how:'Pés na largura dos ombros, desça com controle.'},{n:'Jumping Jacks',d:'15 min',k:180,how:'Abra pernas e braços ao saltar.'},{n:'Bicicleta',d:'35 min',k:250,how:'Pedale em ritmo confortável.'}],
   cardio:[{n:'Ciclismo',d:'45 min',k:350,how:'Mantenha cadência constante.'},{n:'Natação',d:'30 min',k:280,how:'Aqueça antes e alterne estilos.'},{n:'Pular corda',d:'20 min',k:240,how:'Séries curtas com intervalos.'},{n:'Corrida intervalada',d:'25 min',k:300,how:'1 min correndo, 2 caminhando.'},{n:'Futebol',d:'45 min',k:380,how:'Aqueça antes e jogue com segurança.'}],
-  massa:[{n:'Agachamento',d:'4×8',k:120,how:'Desça com controle, costas retas.'},{n:'Flexão',d:'3×10',k:90,how:'Corpo alinhado durante o movimento.'},{n:'Prancha',d:'3×30s',k:60,how:'Abdômen firme e coluna alinhada.'},{n:'Rosca bíceps',d:'3×12',k:60,how:'Suba sem balançar o corpo.'},{n:'Avanço',d:'3×12',k:110,how:'Passo à frente, equilíbrio.'}],
-  flexib:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
+  Físico:[{n:'Agachamento',d:'4×8',k:120,how:'Desça com controle, costas retas.'},{n:'Flexão',d:'3×10',k:90,how:'Corpo alinhado durante o movimento.'},{n:'Prancha',d:'3×30s',k:60,how:'Abdômen firme e coluna alinhada.'},{n:'Rosca bíceps',d:'3×12',k:60,how:'Suba sem balançar o corpo.'},{n:'Avanço',d:'3×12',k:110,how:'Passo à frente, equilíbrio.'}],
+  flexibilidade:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
 };
 let exCat='kids';
 function renderExercicios(el){
   const totalKcal=S.exercicios.reduce((a,e)=>a+e.kcal,0);
   const totalMin=S.exercicios.reduce((a,e)=>a+e.min,0);
-  const catFilters=[{id:'kids',label:'🧒 Atividades Recreativas'},{id:'Energia',label:'🔥 Atividades Energéticas'},{id:'Deslocamento Ativo',label:'🏃 Deslocamento Ativo'},{id:'Exercício Físico',label:'💪 Exercício Físico'},{id:'flexibilidade',label:'🧘 Flexibilidade'}];
+  const catFilters=[{id:'kids',label:'🧒 Recreativas'},{id:'perda',label:'🔥 Energéticas'},{id:'deslocamento ativo',label:'🏃 deslocamento ativo'},{id:'Exercício Físico',label:'💪 Exercício Físico'},{id:'flexibilidade',label:'🧘 Flexibilidade'}];
   el.innerHTML=`
     <div class="page-title"><h1>🏃 <span class="text-primary">Exercícios</span></h1>
       <button class="btn btn-primary" onclick="openModal('modal-ex')">+ Exercício</button>
@@ -1144,13 +1145,14 @@ function renderRotinas(el){
       }
     </div>`;
 }
-function sugerirExercicio(){S.exercicios.push({nome:'Caminhada',min:30,kcal:150,cat:'cardio',series:'—'},{nome:'Alongamento',min:15,kcal:50,cat:'flexibilidade',series:'—'});addXP(10,'Sugestão IA');saveState();renderPage();}
+function sugerirExercicio(){S.exercicios.push({nome:'Caminhada',min:30,kcal:150,cat:'cardio',series:'—'},{nome:'Alongamento',min:15,kcal:50,cat:'flexib',series:'—'});addXP(10,'Sugestão IA');saveState();renderPage();}
 
 // ============================================================
 // CRONOGRAMA
 // ============================================================
 function renderCronograma(el){
   const p=S.perfil||{};
+  const c=me();
   const peso=S.pesos.length?S.pesos[0].peso:(p.peso||60);
   const alturaM=(p.altura||160)/100;
   const imc=(peso/(alturaM*alturaM)).toFixed(1);
@@ -1160,26 +1162,343 @@ function renderCronograma(el){
   const status=parseFloat(diff)>1?'acima':parseFloat(diff)<-1?'abaixo':'normal';
   const kgDiff=Math.abs(parseFloat(diff));
   const dist=[0.15,0.20,0.22,0.22,0.21];
+  const age=p.birthdate?calcAge(p.birthdate):12;
+  const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const hoje=new Date();
+
+  // Recomendações nutricionais por mês
+  const recsNutri = status==='acima'
+    ? ['Reduza alimentos ultraprocessados e aumente vegetais e proteínas magras.','Inclua fibras nas refeições para aumentar saciedade (aveia, legumes, frutas).','Mantenha as refeições regulares, evitando pular o café da manhã.','Prefira água a sucos e refrigerantes. Meta: '+(p.waterGoal||8)+' copos/dia.','Continue firme! Os resultados acumulam com consistência.']
+    : status==='abaixo'
+    ? ['Aumente a frequência das refeições com alimentos nutritivos e calóricos saudáveis.','Inclua proteínas em todas as refeições: ovos, frango, leguminosas, laticínios.','Consuma lanches saudáveis entre as refeições: castanhas, iogurte, frutas com pasta.','Invista em alimentos ricos em nutrientes: abacate, banana, batata-doce.','Mantenha o acompanhamento nutricional para garantir crescimento saudável.']
+    : ['Mantenha a rotina atual de alimentação equilibrada.','Continue priorizando alimentos naturais e variados.','Hidrate-se bem e mantenha a atividade física regular.','Monitore seu peso semanalmente para manter o equilíbrio.','Parabéns! Continue com os hábitos saudáveis.'];
+
+  const recsTreino = status==='acima'
+    ? ['Inicie com 20-30 min de caminhada rápida diária.','Adicione exercícios de resistência 2x por semana (agachamento, flexão).','Inclua atividades que você goste: dança, natação, esportes coletivos.','Aumente a intensidade gradualmente: substitua 10 min de caminhada por corrida.','Mantenha ao menos 150 min de atividade moderada por semana.']
+    : ['Pratique exercícios leves para fortalecer a musculatura.','Inclua exercícios de força supervisionados para ganho de massa.','Priorize atividades de baixo impacto se estiver abaixo do peso.','Aumente o volume de treino gradualmente a cada semana.','Descanse bem: o crescimento muscular ocorre no repouso.'];
+
   el.innerHTML=`
-    <div class="page-title"><div><h1>📅 <span class="text-primary">Cronograma</span></h1></div>${aiBadge('Plano por IA')}</div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">🎯 Situação atual</div>
-        <div class="space-y-2">
-          ${[{label:'Peso atual',val:peso+' kg'},{label:'Peso ideal estimado',val:pesoIdeal.toFixed(1)+' kg'},{label:'IMC',val:imc},{label:'Situação',val:status==='acima'?'⚠️ '+diff+' kg acima':status==='abaixo'?'📉 '+Math.abs(parseFloat(diff)).toFixed(1)+' kg abaixo':'✅ No intervalo saudável'},{label:'Calorias estimadas',val:tdee+' kcal/dia'}].map(item=>`<div class="history-item"><span class="text-sm text-muted">${item.label}</span><span class="font-semibold text-sm">${item.val}</span></div>`).join('')}
-        </div>
+    <div class="page-title">
+      <div><h1>📅 <span class="text-primary">Cronograma</span></h1><p class="text-xs text-muted" style="margin-top:2px">Plano de 5 meses personalizado</p></div>
+      <div class="flex gap-2 items-center">
+        ${aiBadge('Plano por IA')}
+        <button class="btn btn-sm" style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-weight:700" onclick="gerarPDFProjecao()">📄 Baixar PDF</button>
       </div>
-      <div class="card"><div class="card-title">📊 Meta mensal</div>
+    </div>
+
+    <!-- CARDS SITUAÇÃO -->
+    <div class="grid4 mb-4">
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--blue)"></div><div style="font-size:1.3rem">⚖️</div><div class="stat-value" style="font-size:1.3rem">${peso} kg</div><div class="stat-label">peso atual</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--green)"></div><div style="font-size:1.3rem">🎯</div><div class="stat-value" style="font-size:1.3rem">${pesoIdeal.toFixed(1)} kg</div><div class="stat-label">peso ideal</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:${status==='normal'?'#4ade80':status==='acima'?'#fb923c':'#60a5fa'}"></div><div style="font-size:1.3rem">📐</div><div class="stat-value" style="font-size:1.3rem">${imc}</div><div class="stat-label">IMC</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div style="font-size:1.3rem">🔥</div><div class="stat-value" style="font-size:1.3rem">${tdee}</div><div class="stat-label">kcal/dia estimadas</div></div>
+    </div>
+
+    <!-- STATUS GERAL -->
+    <div class="ai-tip-box mb-4">
+      <div class="ai-tip-icon">✦</div>
+      <div>
+        ${aiBadge('Análise personalizada')}
+        <p class="text-sm" style="margin-top:4px">
+          ${status==='normal'
+            ? '✅ Você está no intervalo de peso saudável! Continue mantendo seus hábitos e monitore regularmente.'
+            : status==='acima'
+            ? `⚠️ Você está <strong>${diff} kg acima</strong> do peso ideal estimado. Com hábitos saudáveis, é possível alcançar o equilíbrio em 5 meses.`
+            : `📉 Você está <strong>${Math.abs(parseFloat(diff)).toFixed(1)} kg abaixo</strong> do ideal. Foque em nutrição adequada para um crescimento saudável.`}
+          ${age<18?' <strong>Lembre-se:</strong> você ainda está em desenvolvimento — consulte sempre um profissional de saúde!':''}
+        </p>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <!-- PLANO MENSAL -->
+      <div class="card">
+        <div class="card-title">📊 Projeção mês a mês</div>
         ${status==='normal'
-          ?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">✅</div><p class="font-semibold mt-2">Você está no peso ideal!</p></div>'
-          :'<div class="space-y-3">'+dist.map((pct,i)=>{const kg=(kgDiff*pct).toFixed(1);const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);const color=status==='acima'?'#fb923c':'#3b82f6';
-            return `<div style="background:var(--secondary);border-radius:12px;padding:10px;border:1px solid var(--border)">
-              <div class="flex justify-between mb-1"><span class="text-xs font-bold">Mês ${i+1}</span><span style="font-size:.75rem;font-weight:700;color:${color}">${status==='acima'?'perder':'ganhar'} ${kg} kg</span></div>
-              <div class="progress-track"><div class="progress-fill" style="width:${pct*100}%;background:${color}"></div></div>
-              <div style="font-size:.68rem;color:var(--muted-fg);margin-top:4px">Acumulado: ${acum} kg</div>
-            </div>`;}).join('')+'</div>'
+          ?`<div style="text-align:center;padding:24px 0">
+              <div style="font-size:2.5rem">✅</div>
+              <p class="font-semibold mt-2">Você está no peso ideal!</p>
+              <p class="text-xs text-muted mt-1">Foque em manter os hábitos saudáveis.</p>
+            </div>`
+          :`<div class="space-y-3">
+              ${dist.map((pct,i)=>{
+                const kg=(kgDiff*pct).toFixed(1);
+                const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);
+                const color=status==='acima'?'#fb923c':'#3b82f6';
+                const mesIdx=(hoje.getMonth()+i+1)%12;
+                const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
+                return `<div style="background:var(--secondary);border-radius:12px;padding:12px;border:1px solid var(--border)">
+                  <div class="flex justify-between items-center mb-2">
+                    <div>
+                      <span class="text-xs font-bold">Mês ${i+1} — ${meses[mesIdx]}</span>
+                      <span style="font-size:.68rem;color:var(--muted-fg);margin-left:6px">Peso estimado: <strong>${pesoMes} kg</strong></span>
+                    </div>
+                    <span style="font-size:.78rem;font-weight:700;color:${color}">${status==='acima'?'−':'+'} ${kg} kg</span>
+                  </div>
+                  <div class="progress-track"><div class="progress-fill" style="width:${Math.round((i+1)/dist.length*100)}%;background:${color}"></div></div>
+                  <div style="font-size:.68rem;color:var(--muted-fg);margin-top:4px">Acumulado: ${acum} kg ${status==='acima'?'perdidos':'ganhos'}</div>
+                </div>`;
+              }).join('')}
+              <div style="background:${status==='acima'?'#fff7ed':'#eff6ff'};border:1px solid ${status==='acima'?'#fed7aa':'#bfdbfe'};border-radius:12px;padding:12px;text-align:center">
+                <div style="font-size:1.4rem">${status==='acima'?'🏆':'💪'}</div>
+                <div style="font-weight:700;font-size:.9rem;margin-top:4px">Meta em 5 meses</div>
+                <div style="font-size:.8rem;color:var(--muted-fg)">Peso estimado: <strong>${(status==='acima'?peso-kgDiff:peso+kgDiff).toFixed(1)} kg</strong></div>
+              </div>
+            </div>`
         }
       </div>
+
+      <!-- RECOMENDAÇÕES -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-title">🥗 Nutrição — dicas por mês</div>
+          <div class="space-y-2">
+            ${recsNutri.map((r,i)=>`
+              <div style="display:flex;gap:10px;padding:8px 10px;background:var(--secondary);border-radius:10px;border:1px solid var(--border)">
+                <div style="min-width:24px;height:24px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${i+1}</div>
+                <span style="font-size:.8rem">${r}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🏃 Treino — dicas por mês</div>
+          <div class="space-y-2">
+            ${recsTreino.map((r,i)=>`
+              <div style="display:flex;gap:10px;padding:8px 10px;background:var(--secondary);border-radius:10px;border:1px solid var(--border)">
+                <div style="min-width:24px;height:24px;background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${i+1}</div>
+                <span style="font-size:.8rem">${r}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTÃO PDF FINAL -->
+    <div style="background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:700;font-size:.95rem">📄 Relatório completo em PDF</div>
+        <div style="font-size:.78rem;color:var(--muted-fg);margin-top:2px">Inclui projeção mensal, recomendações nutricionais, de treino e dados físicos.</div>
+      </div>
+      <button class="btn btn-primary" onclick="gerarPDFProjecao()" style="flex-shrink:0">
+        📥 Baixar meu plano em PDF
+      </button>
     </div>`;
+}
+
+// ============================================================
+// GERAR PDF — PROJEÇÃO PESSOAL
+// ============================================================
+function gerarPDFProjecao(){
+  const p=S.perfil||{};
+  const c=me();
+  const peso=S.pesos.length?S.pesos[0].peso:(p.peso||60);
+  const alturaM=(p.altura||160)/100;
+  const imc=(peso/(alturaM*alturaM)).toFixed(1);
+  const tdee=calcTDEE(peso,p.altura||160,p.birthdate,p.sexo,p.atividade);
+  const pesoIdeal=p.sexo==='F'?Math.max(38,45.5+2.3*((p.altura||160)-152.4)/2.54):Math.max(40,50+2.3*((p.altura||160)-152.4)/2.54);
+  const diff=(peso-pesoIdeal).toFixed(1);
+  const status=parseFloat(diff)>1?'acima':parseFloat(diff)<-1?'abaixo':'normal';
+  const kgDiff=Math.abs(parseFloat(diff));
+  const dist=[0.15,0.20,0.22,0.22,0.21];
+  const age=p.birthdate?calcAge(p.birthdate):12;
+  const {level}=getLevel(S.xp||0);
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const hoje=new Date();
+  const kcalConsumed=S.refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
+  const kcalBurned=S.exercicios.reduce((a,e)=>a+e.kcal,0);
+
+  const recsNutri = status==='acima'
+    ? ['Reduza alimentos ultraprocessados e aumente vegetais e proteínas magras.','Inclua fibras nas refeicoes para aumentar saciedade.','Mantenha as refeicoes regulares, evitando pular o cafe da manha.','Prefira agua a sucos e refrigerantes. Meta: '+(p.waterGoal||8)+' copos/dia.','Continue firme! Os resultados acumulam com consistencia.']
+    : status==='abaixo'
+    ? ['Aumente a frequencia das refeicoes com alimentos nutritivos.','Inclua proteinas em todas as refeicoes.','Consuma lanches saudaveis entre as refeicoes.','Invista em alimentos ricos em nutrientes: abacate, banana, batata-doce.','Mantenha acompanhamento nutricional.']
+    : ['Mantenha a rotina de alimentacao equilibrada.','Continue priorizando alimentos naturais e variados.','Hidrate-se bem e mantenha a atividade fisica.','Monitore seu peso semanalmente.','Parabens! Continue com os habitos saudaveis.'];
+
+  const recsTreino = status==='acima'
+    ? ['Inicie com 20-30 min de caminhada rapida diaria.','Adicione exercicios de resistencia 2x por semana.','Inclua atividades que voce goste.','Aumente a intensidade gradualmente.','Mantenha ao menos 150 min de atividade por semana.']
+    : ['Pratique exercicios leves para fortalecer a musculatura.','Inclua exercicios de forca supervisionados.','Priorize atividades de baixo impacto.','Aumente o volume de treino gradualmente.','Descanse bem: o crescimento muscular ocorre no repouso.'];
+
+  if(!window.jspdf){showToast('❌ Biblioteca PDF não carregada. Tente novamente.');return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const W=doc.internal.pageSize.getWidth();
+
+  // ---- HEADER ----
+  doc.setFillColor(26,95,212);
+  doc.rect(0,0,W,38,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('PulseFit',14,16);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.text('Vida Saudável na Juventude',14,23);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','bold');
+  doc.text('PLANO DE PROJECAO PERSONALIZADO — 5 MESES',14,31);
+  doc.setTextColor(40,40,40);
+
+  let y=46;
+
+  // ---- INFO PESSOAL ----
+  doc.setFillColor(234,240,251);
+  doc.roundedRect(10,y,W-20,30,3,3,'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.text('INFORMACOES PESSOAIS',14,y+8);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  const col1=[`Nome: ${p.nome||c?.nome||'--'}`,`Escola: ${p.escola||'--'}`,`Serie: ${p.serie||'--'}`];
+  const col2=[`Idade: ${age} anos`,`Objetivo: ${p.objetivo||'--'}`,`Nivel: ${level.name}`];
+  col1.forEach((t,i)=>doc.text(t,14,y+14+i*6));
+  col2.forEach((t,i)=>doc.text(t,W/2,y+14+i*6));
+  y+=36;
+
+  // ---- DADOS FÍSICOS ----
+  doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.setTextColor(26,95,212);
+  doc.text('DADOS FISICOS',14,y);
+  doc.setTextColor(40,40,40);
+  y+=5;
+  doc.setDrawColor(26,95,212);
+  doc.setLineWidth(0.5);
+  doc.line(14,y,W-14,y);
+  y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  const fisicos=[
+    [`Peso atual: ${peso} kg`,`Peso ideal estimado: ${pesoIdeal.toFixed(1)} kg`],
+    [`IMC: ${imc}`,`Altura: ${p.altura||'--'} cm`],
+    [`Calorias diarias estimadas (TDEE): ${tdee} kcal`,`Situacao: ${status==='normal'?'No intervalo saudavel':status==='acima'?diff+' kg acima do ideal':Math.abs(parseFloat(diff)).toFixed(1)+' kg abaixo do ideal'}`],
+  ];
+  fisicos.forEach(row=>{
+    doc.text(row[0],14,y);
+    doc.text(row[1],W/2,y);
+    y+=7;
+  });
+  y+=4;
+
+  // ---- PROJEÇÃO MENSAL ----
+  doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.setTextColor(26,95,212);
+  doc.text('PROJECAO MENSAL',14,y);
+  doc.setTextColor(40,40,40);
+  y+=5;
+  doc.line(14,y,W-14,y);
+  y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+
+  if(status==='normal'){
+    doc.setFillColor(240,253,244);
+    doc.roundedRect(10,y,W-20,14,2,2,'F');
+    doc.setTextColor(21,128,61);
+    doc.text('Voce ja esta no intervalo saudavel! Foque em manter seus habitos.',14,y+5);
+    doc.text('Continue monitorando regularmente e mantendo a atividade fisica.',14,y+11);
+    doc.setTextColor(40,40,40);
+    y+=20;
+  } else {
+    dist.forEach((pct,i)=>{
+      const kg=(kgDiff*pct).toFixed(1);
+      const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);
+      const mesIdx=(hoje.getMonth()+i+1)%12;
+      const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
+      doc.setFillColor(i%2===0?245:252,i%2===0?247:253,i%2===0?255:255);
+      doc.rect(10,y-4,W-20,12,'F');
+      doc.setFont('helvetica','bold');
+      doc.text(`Mes ${i+1} — ${meses[mesIdx]}:`,14,y+2);
+      doc.setFont('helvetica','normal');
+      doc.text(`${status==='acima'?'Perder':'Ganhar'} ${kg} kg | Acumulado: ${acum} kg | Peso estimado: ${pesoMes} kg`,60,y+2);
+      y+=12;
+    });
+    y+=4;
+    doc.setFillColor(255,247,237);
+    doc.roundedRect(10,y,W-20,14,2,2,'F');
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(194,65,12);
+    doc.text(`META FINAL (5 meses): Peso estimado ${(status==='acima'?peso-kgDiff:peso+kgDiff).toFixed(1)} kg`,14,y+5);
+    doc.setTextColor(40,40,40);
+    const atingir = status==='acima'?'Perder '+kgDiff.toFixed(1)+' kg':'Ganhar '+kgDiff.toFixed(1)+' kg';
+    doc.setFont('helvetica','normal');
+    doc.text('Objetivo: '+atingir+' de forma saudavel e gradual.',14,y+11);
+    doc.setTextColor(40,40,40);
+    y+=20;
+  }
+
+  // ---- NOVA PÁGINA: RECOMENDAÇÕES ----
+  doc.addPage();
+  doc.setFillColor(26,95,212);
+  doc.rect(0,0,W,22,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');doc.setFontSize(12);
+  doc.text('RECOMENDACOES PERSONALIZADAS',14,14);
+  doc.setTextColor(40,40,40);
+  y=32;
+
+  // NUTRIÇÃO
+  doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.setTextColor(26,95,212);
+  doc.text('NUTRICAO — PLANO POR MES',14,y);
+  doc.setTextColor(40,40,40);
+  y+=5;doc.line(14,y,W-14,y);y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  recsNutri.forEach((r,i)=>{
+    const wrapped=doc.splitTextToSize(`${i+1}. ${r}`,W-28);
+    doc.setFillColor(i%2===0?245:252,i%2===0?247:253,255);
+    doc.rect(10,y-4,W-20,wrapped.length*6+4,'F');
+    doc.text(wrapped,14,y);
+    y+=wrapped.length*6+4;
+  });
+  y+=6;
+
+  // TREINO
+  doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.setTextColor(247,115,22);
+  doc.text('TREINO — PLANO POR MES',14,y);
+  doc.setTextColor(40,40,40);
+  y+=5;doc.setDrawColor(247,115,22);doc.line(14,y,W-14,y);y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  recsTreino.forEach((r,i)=>{
+    const wrapped=doc.splitTextToSize(`${i+1}. ${r}`,W-28);
+    doc.setFillColor(i%2===0?255:252,i%2===0?247:253,i%2===0?237:255);
+    doc.rect(10,y-4,W-20,wrapped.length*6+4,'F');
+    doc.text(wrapped,14,y);
+    y+=wrapped.length*6+4;
+  });
+  y+=6;
+
+  // ATIVIDADE ATUAL
+  doc.setDrawColor(180,180,180);
+  doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.setTextColor(26,95,212);
+  doc.text('ATIVIDADE ATUAL',14,y);
+  doc.setTextColor(40,40,40);
+  y+=5;doc.line(14,y,W-14,y);y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  const ativAtual=[
+    `Refeicoes registradas: ${S.refeicoes.length}`,
+    `Calorias consumidas hoje: ${kcalConsumed} kcal`,
+    `Calorias queimadas hoje: ${kcalBurned} kcal`,
+    `Agua hoje: ${S.agua} copos (${S.agua*250} ml)`,
+    `Exercicios hoje: ${S.exercicios.length}`,
+    `XP acumulado: ${S.xp||0} pontos | Nivel: ${level.name}`,
+    `Conquistas: ${S.badges.length} de ${ALL_BADGES.length}`,
+  ];
+  ativAtual.forEach(t=>{doc.text('• '+t,14,y);y+=7;});
+
+  // ---- RODAPÉ ----
+  const totalPages=doc.internal.getNumberOfPages();
+  for(let pg=1;pg<=totalPages;pg++){
+    doc.setPage(pg);
+    const pageH=doc.internal.pageSize.getHeight();
+    doc.setFillColor(240,244,255);
+    doc.rect(0,pageH-14,W,14,'F');
+    doc.setFont('helvetica','normal');doc.setFontSize(7);
+    doc.setTextColor(107,127,163);
+    doc.text('PulseFit — Vida Saudável na Juventude | Gerado em '+new Date().toLocaleDateString('pt-BR'),14,pageH-6);
+    doc.text('Pagina '+pg+' de '+totalPages,W-30,pageH-6);
+  }
+
+  const nomeArq='plano_projecao_'+(p.nome||c?.nome||'usuario').replace(/\s/g,'_')+'_'+hoje.toISOString().split('T')[0]+'.pdf';
+  doc.save(nomeArq);
+  showToast('📄 Plano de projeção baixado com sucesso!');
 }
 
 // ============================================================
@@ -1609,7 +1928,7 @@ function salvarPerfilColaborador() {
 
 function renderPerfilAluno(el, c) {
   const p = S.perfil || {};
-  const OBJETIVOS=[{id:'Atividades Energéticas',label:'🔥Atividades Energéticas'},{id:'saude',label:'💚 Saúde geral'},{id:'Equilíbrio',label:'⚖️ Equilíbrio'},{id:'deslocamento ativo',label:'🏃 deslocamento ativo'},{id:'exercícios físicos',label:'💪 exercícios físicos'}];
+  const OBJETIVOS=[{id:'emagrecer',label:'🔥 Emagrecer'},{id:'saude',label:'💚 Saúde geral'},{id:'esporte',label:'⚖️ Equilíbrio'},{id:'movimento',label:'🏃 Movimento'},{id:'massa',label:'💪 Ganhar massa'}];
   const atv=p.atividade||1.375;
   selectedObj=p.objetivo||'saude';
   el.innerHTML=`
@@ -1659,7 +1978,7 @@ function renderPerfilAluno(el, c) {
 
 function selectObj(id){
   selectedObj=id;
-  ['Crescimento Saudável','saúde geral','equilíbrio','Deslocamento Ativo','Exercícios Físicos'].forEach(o=>{
+  ['emagrecer','saude','esporte','movimento','massa'].forEach(o=>{
     const btn=document.getElementById('obj-'+o);
     if(btn){btn.style.background=o===id?'rgba(26,95,212,.06)':'';btn.style.borderColor=o===id?'var(--primary)':'var(--border)';btn.style.color=o===id?'var(--primary)':'#1a2340';}
   });
@@ -1713,7 +2032,7 @@ function gerarPDF(aluno, sAluno) {
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
   const linhas=[
-    'PULSEFIT — VIDA SAUDÁVEL NA JUVENTUDE',
+    'PULSEFIT — Vida Saudável na Juventude',
     'Relatório de Acompanhamento',
     '',
     'Aluno: '+aluno.nome,
