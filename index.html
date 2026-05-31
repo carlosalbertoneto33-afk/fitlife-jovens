@@ -42,7 +42,7 @@ main{margin-top:56px;margin-left:64px;min-height:100vh;padding:24px}
 .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{opacity:.88}
 .btn-outline{background:none;border:1px solid var(--border);color:#1a2340}.btn-outline:hover{background:var(--secondary)}
 .btn-ai{background:none;border:1px solid rgba(26,95,212,.3);color:var(--primary)}.btn-ai:hover{background:rgba(26,95,212,.06)}
-.btn-danger{background:none;border:1px solid #fecaca;color:#dc2626;background:#fef2f2}
+.btn-danger{background:#fef2f2;border:1px solid #fecaca;color:#dc2626}
 .btn-sm{padding:6px 12px;font-size:.78rem;border-radius:10px}
 .w-full{width:100%}
 .mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}.mt-5{margin-top:20px}
@@ -230,7 +230,7 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
       </div>
       <div class="grid2">
         <div><label class="field-label">Categoria</label>
-          <select class="select" id="e-cat"><option value="deslocamento ativo">🏃 Deslocamento Ativo</option><option value="Exercício Físico">💪 Exercício Físico</option><option value="flexibilidade">🧘 Flexibilidade</option><option value="Atividade Recreativa ">🧒 Atividade Recreativa </option><option value="Crescimento Saudável">🔥 Crescimento Saudável</option></select>
+          <select class="select" id="e-cat"><option value="Deslocamento Ativo">🏃 Deslocamento Ativo</option><option value="Exercício Físico">💪 Exercício Físico</option><option value="Flexibilidade">🧘 Flexibilidade</option><option value="Atividades Recreativas">🧒 Atividades Recreativas</option><option value="Atividades Energéticas">🔥 Atividades Energéticas</option></select>
         </div>
         <div><label class="field-label">Séries × Reps</label><input class="input" id="e-series" placeholder="3 × 12"></div>
       </div>
@@ -391,11 +391,11 @@ function camposCadastro(){
     </div>
     <div><label class="field-label">Objetivo</label>
       <select class="select" id="c-obj">
-        <option value="saúde">💚 Saúde geral</option>
+        <option value="saude">💚 Saúde geral</option>
         <option value="Crescimento Saudável">🌱 Crescimento Saudável</option>
         <option value="Equilíbrio">⚖️ Equilíbrio</option>
         <option value="Deslocamento Ativo">🏃 Deslocamento Ativo</option>
-        <option value="Exercícios Físicos">💪 Exercícios Físicos</option>
+        <option value="Exercício Físico">💪 Exercício Físico</option>
       </select>
     </div>`;
   }
@@ -508,7 +508,7 @@ function calcTDEE(peso,altura,bd,sexo,atv){
 }
 function calcMacros(peso,altura,bd,sexo,obj,atv){
   const tdee=calcTDEE(peso,altura,bd,sexo,atv);
-  const pf={"Crescimento Saudável":1.6,"saúde":1.4,"Equilíbrio":1.6,"Deslocamento Ativo":1.4,"Exercício Físico":1.8};
+  const pf={Crescimento:1.6,saúde:1.4,Equilíbrio:1.6,Deslocamento :1.4,Exercício:1.8};
   const prot=Math.round((pf[obj]||1.4)*peso);
   const gord=Math.round(tdee*0.27/9);
   const carb=Math.round(Math.max(100,(tdee-prot*4-gord*9)/4));
@@ -875,7 +875,7 @@ function renderAlimentacao(el){
 function setFoodFilter(f){foodFilter=f;renderPage();}
 const MEAL_PLANS={
   saúde:[{nome:'Café saudável',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false,desc:'Iogurte + frutas + granola'},{nome:'Almoço nutritivo',hora:'12:00',kcal:580,prot:38,carb:60,gord:15,icon:'☀️',feita:false,desc:'Salmão + quinoa + brócolis'},{nome:'Jantar balanceado',hora:'19:00',kcal:400,prot:30,carb:45,gord:12,icon:'🌙',feita:false,desc:'Omelete + salada'}],
-  crescimento:[{nome:'Café saudável',hora:'07:00',kcal:300,prot:20,carb:35,gord:8,icon:'🌅',feita:false,desc:'Iogurte + frutas'},{nome:'Almoço equilibrado',hora:'12:00',kcal:500,prot:35,carb:55,gord:12,icon:'☀️',feita:false,desc:'Frango + salada'},{nome:'Jantar leve',hora:'19:00',kcal:350,prot:25,carb:35,gord:10,icon:'🌙',feita:false,desc:'Omelete + legumes'}],
+  Crescimento:[{nome:'Café saudável',hora:'07:00',kcal:300,prot:20,carb:35,gord:8,icon:'🌅',feita:false,desc:'Iogurte + frutas'},{nome:'Almoço equilibrado',hora:'12:00',kcal:500,prot:35,carb:55,gord:12,icon:'☀️',feita:false,desc:'Frango + salada'},{nome:'Jantar leve',hora:'19:00',kcal:350,prot:25,carb:35,gord:10,icon:'🌙',feita:false,desc:'Omelete + legumes'}],
   esporte:[{nome:'Café pré-treino',hora:'07:00',kcal:500,prot:30,carb:65,gord:10,icon:'🌅',feita:false,desc:'Aveia + banana'},{nome:'Almoço proteico',hora:'12:00',kcal:700,prot:50,carb:70,gord:18,icon:'☀️',feita:false,desc:'Frango + arroz + feijão'},{nome:'Jantar recuperação',hora:'19:00',kcal:550,prot:45,carb:55,gord:14,icon:'🌙',feita:false,desc:'Atum + batata doce'}],
   massa:[{nome:'Café hipercalórico',hora:'07:00',kcal:600,prot:40,carb:75,gord:15,icon:'🌅',feita:false,desc:'Ovos + aveia + leite'},{nome:'Almoço completo',hora:'12:00',kcal:800,prot:55,carb:85,gord:20,icon:'☀️',feita:false,desc:'Carne + arroz + feijão'},{nome:'Jantar proteico',hora:'19:00',kcal:650,prot:50,carb:70,gord:18,icon:'🌙',feita:false,desc:'Frango + batata doce'}],
   Deslocamento:[{nome:'Café energético',hora:'07:00',kcal:400,prot:20,carb:55,gord:10,icon:'🌅',feita:false,desc:'Tapioca + ovo'},{nome:'Almoço equilibrado',hora:'12:00',kcal:600,prot:35,carb:70,gord:14,icon:'☀️',feita:false,desc:'Frango + arroz integral'},{nome:'Jantar leve',hora:'19:00',kcal:380,prot:28,carb:40,gord:10,icon:'🌙',feita:false,desc:'Sopa + pão integral'}],
@@ -904,14 +904,14 @@ const EX_SUGS={
   kids:[{n:'Pega-pega',d:'20 min',k:150,how:'Corra para fugir ou pegar os amigos.'},{n:'Amarelinha',d:'15 min',k:80,how:'Pule casa por casa com equilíbrio.'},{n:'Pular corda',d:'15 min',k:120,how:'Comece devagar e aumente o ritmo.'},{n:'Dança livre',d:'30 min',k:160,how:'Escolha uma música animada e dance!'},{n:'Futebol recreativo',d:'40 min',k:200,how:'Jogue com amigos e se divirta.'}],
   perda:[{n:'Caminhada rápida',d:'30 min',k:180,how:'Caminhe em ritmo firme.'},{n:'Corrida',d:'30 min',k:300,how:'Alterne caminhada e corrida.'},{n:'Agachamento',d:'3×15',k:120,how:'Pés na largura dos ombros, desça com controle.'},{n:'Jumping Jacks',d:'15 min',k:180,how:'Abra pernas e braços ao saltar.'},{n:'Bicicleta',d:'35 min',k:250,how:'Pedale em ritmo confortável.'}],
   cardio:[{n:'Ciclismo',d:'45 min',k:350,how:'Mantenha cadência constante.'},{n:'Natação',d:'30 min',k:280,how:'Aqueça antes e alterne estilos.'},{n:'Pular corda',d:'20 min',k:240,how:'Séries curtas com intervalos.'},{n:'Corrida intervalada',d:'25 min',k:300,how:'1 min correndo, 2 caminhando.'},{n:'Futebol',d:'45 min',k:380,how:'Aqueça antes e jogue com segurança.'}],
-  Físico:[{n:'Agachamento',d:'4×8',k:120,how:'Desça com controle, costas retas.'},{n:'Flexão',d:'3×10',k:90,how:'Corpo alinhado durante o movimento.'},{n:'Prancha',d:'3×30s',k:60,how:'Abdômen firme e coluna alinhada.'},{n:'Rosca bíceps',d:'3×12',k:60,how:'Suba sem balançar o corpo.'},{n:'Avanço',d:'3×12',k:110,how:'Passo à frente, equilíbrio.'}],
-  flexibilidade:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
+  massa:[{n:'Agachamento',d:'4×8',k:120,how:'Desça com controle, costas retas.'},{n:'Flexão',d:'3×10',k:90,how:'Corpo alinhado durante o movimento.'},{n:'Prancha',d:'3×30s',k:60,how:'Abdômen firme e coluna alinhada.'},{n:'Rosca bíceps',d:'3×12',k:60,how:'Suba sem balançar o corpo.'},{n:'Avanço',d:'3×12',k:110,how:'Passo à frente, equilíbrio.'}],
+  flexib:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
 };
 let exCat='kids';
 function renderExercicios(el){
   const totalKcal=S.exercicios.reduce((a,e)=>a+e.kcal,0);
   const totalMin=S.exercicios.reduce((a,e)=>a+e.min,0);
-  const catFilters=[{id:'kids',label:'🧒 Recreativas'},{id:'perda',label:'🔥 Energéticas'},{id:'deslocamento ativo',label:'🏃 deslocamento ativo'},{id:'Exercício Físico',label:'💪 Exercício Físico'},{id:'flexibilidade',label:'🧘 Flexibilidade'}];
+  const catFilters=[{id:'kids',label:'🧒 Atividades Recreativas'},{id:'Atividades Energéticas',label:'🔥 Atividades Energéticas'},{id:'Deslocamento Ativo',label:'🏃 Deslocamento Ativo'},{id:'Exercício Físico',label:'💪 Exercício Físico'},{id:'flexib',label:'🧘 Flexibilidade'}];
   el.innerHTML=`
     <div class="page-title"><h1>🏃 <span class="text-primary">Exercícios</span></h1>
       <button class="btn btn-primary" onclick="openModal('modal-ex')">+ Exercício</button>
@@ -1600,6 +1600,7 @@ function renderPainelEscola(el) {
                 ${imc!=='--'?`<span class="badge-yellow">IMC ${imc}</span>`:''}
               </div>
               <div style="color:var(--primary);font-size:.8rem;font-weight:600;white-space:nowrap">Ver detalhes →</div>
+              <button onclick="event.stopPropagation();confirmarExcluirAluno(this.dataset.id,this.dataset.nome)" data-id="${a.id}" data-nome="${a.nome.replace(/&quot;/g,'')}" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:4px 8px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🗑 Excluir</button>
             </div>`;
           }).join('')}
         </div>`
@@ -1694,6 +1695,7 @@ function exibirModalAluno(aluno, sAluno) {
       </div>` : '<p class="text-sm text-muted">Nenhum peso registrado ainda.</p>'}
 
       <button class="btn btn-primary w-full" onclick="baixarRelatorioAluno('${aluno.id}')">📄 Baixar relatório PDF</button>
+      <button class="btn w-full mt-2" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;font-weight:700" onclick="closeModal('modal-ver-aluno');confirmarExcluirAluno(this.dataset.id,this.dataset.nome)" data-id="${aluno.id}" data-nome="${aluno.nome.replace(/"/g,'')}">🗑 Excluir cadastro deste aluno</button>
     </div>`;
 
   openModal('modal-ver-aluno');
@@ -1831,6 +1833,33 @@ function renderPerfilEscola(el, c) {
         <div class="card-title mt-4">Zona de perigo</div>
         <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
       </div>
+    </div>
+
+    <!-- GESTÃO DE ALUNOS -->
+    <div class="card mt-4">
+      <div class="flex justify-between items-center mb-4">
+        <div class="card-title" style="margin:0">👥 Gerenciar Alunos Cadastrados</div>
+        <span class="badge-blue">${AUTH.contas.filter(a=>a.tipo==='aluno').length} alunos</span>
+      </div>
+      ${(() => {
+        const alunos = AUTH.contas.filter(a => a.tipo === 'aluno');
+        if (alunos.length === 0) {
+          return '<div style="text-align:center;padding:32px"><div style="font-size:2rem">👥</div><p class="text-sm text-muted mt-2">Nenhum aluno cadastrado ainda.</p></div>';
+        }
+        return '<div class="space-y-2">' + alunos.map(a => {
+          let sA = {}; try { sA = JSON.parse(localStorage.getItem(userKey(a.id))) || {}; } catch(e) {}
+          const xp = sA.xp || 0;
+          return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--secondary)">
+            <div class="aluno-avatar" style="width:34px;height:34px;font-size:.85rem">${a.nome[0].toUpperCase()}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:.85rem">${a.nome}</div>
+              <div style="font-size:.72rem;color:var(--muted-fg)">${a.dados.serie||'--'} · ${a.dados.escola||'--'} · ⭐ ${xp} XP</div>
+            </div>
+            <button onclick="verAlunoEscola('${a.id}')" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:8px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">Ver</button>
+            <button onclick="confirmarExcluirAluno('${a.id}',this.dataset.nome)" data-nome="${a.nome.replace(/"/g,'&quot;')}" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">🗑 Excluir</button>
+          </div>`;
+        }).join('') + '</div>';
+      })()}
     </div>`;
 }
 
@@ -1928,7 +1957,7 @@ function salvarPerfilColaborador() {
 
 function renderPerfilAluno(el, c) {
   const p = S.perfil || {};
-  const OBJETIVOS=[{id:'emagrecer',label:'🔥 Emagrecer'},{id:'saude',label:'💚 Saúde geral'},{id:'esporte',label:'⚖️ Equilíbrio'},{id:'movimento',label:'🏃 Movimento'},{id:'massa',label:'💪 Ganhar massa'}];
+  const OBJETIVOS=[{id:'Crescimento Saudável',label:'🔥 Crescimento Saudável'},{id:'saúde',label:'💚 Saúde geral'},{id:'Equilíbrio',label:'⚖️ Equilíbrio'},{id:'Deslocamento Ativo',label:'🏃 Deslocamento Ativo'},{id:'Exercício Físico',label:'💪 Exercício Físico'}];
   const atv=p.atividade||1.375;
   selectedObj=p.objetivo||'saude';
   el.innerHTML=`
@@ -1978,7 +2007,7 @@ function renderPerfilAluno(el, c) {
 
 function selectObj(id){
   selectedObj=id;
-  ['emagrecer','saude','esporte','movimento','massa'].forEach(o=>{
+  ['Crescimento Saudável','saúde','Equilíbrio','Deslocamento Ativo','Exercício Físico'].forEach(o=>{
     const btn=document.getElementById('obj-'+o);
     if(btn){btn.style.background=o===id?'rgba(26,95,212,.06)':'';btn.style.borderColor=o===id?'var(--primary)':'var(--border)';btn.style.color=o===id?'var(--primary)':'#1a2340';}
   });
@@ -2014,6 +2043,30 @@ function limparMeusDados(){
   renderPage();
 }
 
+
+// ============================================================
+// EXCLUIR ALUNO — apenas escola pode excluir
+// ============================================================
+function confirmarExcluirAluno(alunoId, nomeAluno) {
+  if (!confirm('⚠️ Tem certeza que deseja EXCLUIR o cadastro de "' + nomeAluno + '"?\n\nEsta ação irá remover a conta e TODOS os dados do aluno permanentemente.\n\nEsta ação NÃO pode ser desfeita!')) return;
+  // Double confirmation for safety
+  if (!confirm('🔴 CONFIRMAÇÃO FINAL\n\nVocê está prestes a excluir permanentemente:\n• Conta de "' + nomeAluno + '"\n• Todas as refeições, exercícios, peso e dados\n• XP, conquistas e histórico\n\nConfirmar exclusão?')) return;
+  excluirAluno(alunoId, nomeAluno);
+}
+
+function excluirAluno(alunoId, nomeAluno) {
+  // Remove state from localStorage
+  try { localStorage.removeItem(userKey(alunoId)); } catch(e) {}
+  // Remove from AUTH.contas
+  const idx = AUTH.contas.findIndex(c => c.id === alunoId);
+  if (idx !== -1) {
+    AUTH.contas.splice(idx, 1);
+    saveAuth();
+  }
+  showToast('✅ Aluno "' + nomeAluno + '" excluído com sucesso.');
+  renderPage();
+}
+
 // ============================================================
 // PDF
 // ============================================================
@@ -2032,7 +2085,7 @@ function gerarPDF(aluno, sAluno) {
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
   const linhas=[
-    'PULSEFIT — Vida Saudável na Juventude',
+    'PULSEFIT — COMBATENDO A OBESIDADE NOS JOVENS',
     'Relatório de Acompanhamento',
     '',
     'Aluno: '+aluno.nome,
